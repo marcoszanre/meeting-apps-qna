@@ -1,0 +1,11 @@
+{
+  "generator-teams": {
+    "promptValues": {
+      "developer": "Contoso",
+      "unitTestsEnabled": false,
+      "useAzureAppInsights": false
+    },
+    "libraryName": "qnaMeetingApp",
+    "generator-version": "2.17.1"
+  }
+}
