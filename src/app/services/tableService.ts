@@ -27,6 +27,7 @@ const insertQuestion = (meetingid: string, author: string, question: string) => 
             meetingid: {_: meetingid},
             author: {_: author},
             question: {_: question},
+            promoted: {_: false},
         };
 
         tableSvc.insertEntity("questionsTable", questionReference, (error, result, response) => {
@@ -58,6 +59,50 @@ const deleteQuestion = (rowkey: string) => {
             } else {
               log(error);
               reject("Error")
+            }
+        });
+    });
+};
+
+const tableSvcUpdateQuestion = (rowkey: string, question: string) => {
+
+    return new Promise((resolve, reject) => { 
+        const questionReference = {
+            PartitionKey: {_: "questionsPartition"},
+            RowKey: {_: rowkey},
+            question: {_: question}
+        };
+
+        tableSvc.mergeEntity("questionsTable", questionReference, (error, result, response) => {
+            if (!error) {
+              // Entity inserted
+              log("success!");
+              resolve("OK");
+            } else {
+              log(error);
+              reject("Error");
+            }
+        });
+    });
+};
+
+const tableSvcPromoteDemoteQuestion = (rowkey: string, promoted: boolean) => {
+
+    return new Promise((resolve, reject) => { 
+        const questionReference = {
+            PartitionKey: {_: "questionsPartition"},
+            RowKey: {_: rowkey},
+            promoted: {_: promoted}
+        };
+
+        tableSvc.mergeEntity("questionsTable", questionReference, (error, result, response) => {
+            if (!error) {
+              // Entity inserted
+              log("success!");
+              resolve("OK");
+            } else {
+              log(error);
+              reject("Error");
             }
         });
     });
@@ -98,11 +143,47 @@ const getQuestions = async (meetingid: string, author: string) => {
     });
 };
 
+const getAllQuestions = async (meetingid: string) => {
+
+    return new Promise((resolve) => {
+
+        // log("meeting id is " + meetingid);
+
+        let myQuestions: Question[] = [];
+
+        const query = new azure.TableQuery()
+            .where("meetingid eq ?", meetingid);
+
+        tableSvc.queryEntities("questionsTable", query, null, (error, result) => {
+            if (!error) {
+                // log(result);
+
+              // query was successful
+              for (let i = 0; i < result.entries.length; i++) {
+
+                  const question: Question = {
+                    meetingId: result.entries[i].meetingid._,
+                    author: result.entries[i].author._,
+                    question: result.entries[i].question._,
+                    promoted: result.entries[i].promoted._,
+                    RowKey: result.entries[i].RowKey._
+                  };
+
+                  myQuestions.push(question);   
+              }
+            //   log(myQuestions.length);
+            resolve(myQuestions);
+            }
+        });
+    });
+};
+
 interface Question {
     meetingId: string;
     author: string;
     question: string;
     RowKey: string;
+    promoted?: boolean;
 }
 
 
@@ -111,5 +192,8 @@ export {
     insertQuestion,
     getQuestions,
     Question,
-    deleteQuestion
+    deleteQuestion,
+    tableSvcUpdateQuestion,
+    getAllQuestions,
+    tableSvcPromoteDemoteQuestion
 }

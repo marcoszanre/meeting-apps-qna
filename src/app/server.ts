@@ -5,7 +5,7 @@ import * as morgan from "morgan";
 import { MsTeamsApiRouter, MsTeamsPageRouter } from "express-msteams-host";
 import * as debug from "debug";
 import * as compression from "compression";
-import { initTableSvc, insertQuestion, getQuestions, deleteQuestion } from "./services/tableService";
+import { initTableSvc, insertQuestion, getQuestions, deleteQuestion, tableSvcUpdateQuestion, getAllQuestions, tableSvcPromoteDemoteQuestion } from "./services/tableService";
 
 
 
@@ -84,7 +84,14 @@ express.use("/api/question", async (req, res) => {
         // log(meetingId);
         // log(author);
 
-        const questionsList = await getQuestions(meetingId, author);
+        let questionsList;
+
+        if (author === "all") {
+            questionsList = await getAllQuestions(meetingId);
+        } else {
+            questionsList = await getQuestions(meetingId, author);
+        }
+
         // log(questionsList);
         res.json(questionsList);
     } else if (req.method === "DELETE") {
@@ -96,6 +103,29 @@ express.use("/api/question", async (req, res) => {
         const rowkey = req.query.rowkey as string;
 
         const response = await deleteQuestion(rowkey);
+        log(response);
+        response === "OK" ? res.status(200) : res.status(500);
+        res.send();
+    } else if (req.method === "PATCH") {
+
+        // handle DELETE request
+        log("PATCH request called");
+        // log(req.query);
+
+        const rowkey = req.query.rowkey as string;
+        let response;
+
+        if (req.query.question) {
+            // handle update question event
+            const question = req.query.question as string;
+            response = await tableSvcUpdateQuestion(rowkey, question);
+
+        } else {
+            // handle promote question
+            const promoted: boolean = (req.query.promoted === "true");
+            response = await tableSvcPromoteDemoteQuestion(rowkey, promoted);
+        }
+
         log(response);
         response === "OK" ? res.status(200) : res.status(500);
         res.send();
@@ -134,8 +164,11 @@ express.get("/api/role", async (req, res, next) => {
     const meetingId = req.query.meetingId;
     const userId = req.query.userId;
 
-    const accessToken = await getAuthTokenFromMicrosoft(process.env.MICROSOFT_APP_ID, process.env.MICROSOFT_APP_PASSWORD);
+    // const accessToken = await getAuthTokenFromMicrosoft(process.env.MICROSOFT_APP_ID, process.env.MICROSOFT_APP_PASSWORD);
+    const accessToken = await getAuthTokenFromMicrosoft();
+    // log(accessToken);
     const memberRoleResponse = await getMeetingParticipant(accessToken, meetingId, userId, process.env.TENANT_ID as string);
+    // log(memberRoleResponse);
     const userRole = memberRoleResponse.meetingRole;
 
     // console.log(meetingId);
@@ -153,7 +186,8 @@ express.get("/api/bubble", async (req, res, next) => {
     const chatId = req.query.chatId;
     const meetingBubbleTitle = "Contoso";
 
-    const accessToken = await getAuthTokenFromMicrosoft(process.env.MICROSOFT_APP_ID, process.env.MICROSOFT_APP_PASSWORD);
+    // const accessToken = await getAuthTokenFromMicrosoft(process.env.MICROSOFT_APP_ID, process.env.MICROSOFT_APP_PASSWORD);
+    const accessToken = await getAuthTokenFromMicrosoft();
     await sendBubbleMessage(accessToken, chatId, meetingBubbleTitle);
 
     res.sendStatus(200);
@@ -161,13 +195,14 @@ express.get("/api/bubble", async (req, res, next) => {
 });
 
 
-const getAuthTokenFromMicrosoft = async (appId, appSecret) => {
+// const getAuthTokenFromMicrosoft = async (appId, appSecret) => {
+const getAuthTokenFromMicrosoft = async () => {
 
     const details = {
         scope: "https://api.botframework.com/.default",
         grant_type: "client_credentials",
-        client_id: appId,
-        client_secret: appSecret
+        client_id: process.env.MICROSOFT_APP_ID,
+        client_secret: process.env.MICROSOFT_APP_PASSWORD
     };
 
     const formBody: string[] = [];
@@ -191,6 +226,7 @@ const getAuthTokenFromMicrosoft = async (appId, appSecret) => {
     });
     const json = await res.json();
     if (json.error) { throw new Error(`${json.error}: ${json.error_description}`); }
+    // log(json);
     return json.access_token;
 };
 
