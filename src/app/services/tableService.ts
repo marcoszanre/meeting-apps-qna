@@ -66,7 +66,7 @@ const deleteQuestion = (rowkey: string) => {
 
 const tableSvcUpdateQuestion = (rowkey: string, question: string) => {
 
-    return new Promise((resolve, reject) => { 
+    return new Promise((resolve, reject) => {
         const questionReference = {
             PartitionKey: {_: "questionsPartition"},
             RowKey: {_: rowkey},
@@ -166,7 +166,8 @@ const getAllQuestions = async (meetingid: string) => {
                     author: result.entries[i].author._,
                     question: result.entries[i].question._,
                     promoted: result.entries[i].promoted._,
-                    RowKey: result.entries[i].RowKey._
+                    RowKey: result.entries[i].RowKey._,
+                    Timestamp: result.entries[i].Timestamp._
                   };
 
                   myQuestions.push(question);   
@@ -178,12 +179,132 @@ const getAllQuestions = async (meetingid: string) => {
     });
 };
 
+const setActiveQuestion = (meetingid: string, question: string) => {
+
+    return new Promise(async (resolve, reject) => { 
+        const questionReference = {
+            PartitionKey: {_: "activeQuestionPartition"},
+            RowKey: {_: meetingid},
+            question: {_: question},
+        };
+
+        const isAlreadyActiveQuestion = await getActiveQuestion(meetingid);
+        if (isAlreadyActiveQuestion === "no questions found") {
+            // no active questions, create one
+            tableSvc.insertEntity("questionsTable", questionReference, (error, result, response) => {
+                if (!error) {
+                  // Entity inserted
+                  log("success!");
+                  resolve("OK");
+                } else {
+                  log(error);
+                  reject("Error");
+                }
+            });
+        } else {
+            // merge question reference as active question
+            tableSvc.mergeEntity("questionsTable", questionReference, (error, result, response) => {
+                if (!error) {
+                  // Entity inserted
+                  log("success!");
+                  resolve("OK");
+                } else {
+                  log(error);
+                  reject("Error");
+                }
+            });
+        }
+
+        
+    });
+};
+
+const getActiveQuestion = async (rowkey: string) => {
+
+    return new Promise((resolve, reject) => {
+
+        tableSvc.retrieveEntity("questionsTable", "activeQuestionPartition", rowkey, (error, result, response) => {
+            if (!error) {
+                // result contains the entity
+                const question = {
+                    RowKey: result.RowKey._,
+                    question: result.question._
+                };
+                // log(question);
+                resolve(question.question);
+            } else {
+                resolve("no questions found");
+            }
+        });
+    });
+};
+
+const setMeetingState = (rowkey: string, active: boolean) => {
+
+    return new Promise(async (resolve, reject) => { 
+        const meetingReference = {
+            PartitionKey: {_: "meetingStatePartition"},
+            RowKey: {_: rowkey},
+            active: {_: active}
+        };
+
+        const isThereAlreadyAMeetingState = await getMeetingState(rowkey);
+        if (isThereAlreadyAMeetingState === "not found") {
+            // no active questions, create one
+            tableSvc.insertEntity("questionsTable", meetingReference, (error, result, response) => {
+                if (!error) {
+                  // Entity inserted
+                  log("success!");
+                  resolve("OK");
+                } else {
+                  log(error);
+                  reject("Error");
+                }
+            });
+        } else {
+            // merge question reference as active question
+            tableSvc.mergeEntity("questionsTable", meetingReference, (error, result, response) => {
+                if (!error) {
+                  // Entity inserted
+                  log("success!");
+                  resolve("OK");
+                } else {
+                  log(error);
+                  reject("Error");
+                }
+            });
+        }
+
+    });
+};
+
+const getMeetingState = async (rowkey: string) => {
+
+    return new Promise((resolve, reject) => {
+
+        tableSvc.retrieveEntity("questionsTable", "meetingStatePartition", rowkey, (error, result, response) => {
+            if (!error) {
+                // result contains the entity
+                const meetingState = {
+                    RowKey: result.RowKey._,
+                    state: result.state._
+                };
+                // log(question);
+                resolve(meetingState.state);
+            } else {
+                resolve("not found");
+            }
+        });
+    });
+};
+
 interface Question {
     meetingId: string;
     author: string;
     question: string;
     RowKey: string;
     promoted?: boolean;
+    Timestamp?: string;
 }
 
 
@@ -195,5 +316,9 @@ export {
     deleteQuestion,
     tableSvcUpdateQuestion,
     getAllQuestions,
-    tableSvcPromoteDemoteQuestion
+    tableSvcPromoteDemoteQuestion,
+    setActiveQuestion,
+    getActiveQuestion,
+    setMeetingState,
+    getMeetingState
 }

@@ -6,7 +6,7 @@ import { useTeams } from "msteams-react-base-component";
 import * as microsoftTeams from "@microsoft/teams-js";
 import jwt_decode from "jwt-decode";
 import { Question } from "../../services/tableService";
-import { Details } from "./components/Details";
+import { UIRouter } from "./components/UIRouter";
 
 /**
  * Implementation of the QnA content page
@@ -89,7 +89,8 @@ export const QnATab = () => {
     return (
         <Provider theme={theme}>
 
-            {userRole ? <Details role={userRole} context={context!} name={name!}/> : <Loader label="Loading details" />}
+            {/* {userRole ? <UIRouter role={userRole} context={context!} name={name!}/> : <Loader label="Loading details" />} */}
+            {userRole && <UIRouter role={userRole} context={context!} name={name!}/>}
 
         </Provider>
     );

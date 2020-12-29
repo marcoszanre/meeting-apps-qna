@@ -5,7 +5,7 @@ import * as morgan from "morgan";
 import { MsTeamsApiRouter, MsTeamsPageRouter } from "express-msteams-host";
 import * as debug from "debug";
 import * as compression from "compression";
-import { initTableSvc, insertQuestion, getQuestions, deleteQuestion, tableSvcUpdateQuestion, getAllQuestions, tableSvcPromoteDemoteQuestion } from "./services/tableService";
+import { initTableSvc, insertQuestion, getQuestions, deleteQuestion, tableSvcUpdateQuestion, getAllQuestions, tableSvcPromoteDemoteQuestion, setActiveQuestion, getActiveQuestion, setMeetingState, getMeetingState } from "./services/tableService";
 
 
 
@@ -132,6 +132,90 @@ express.use("/api/question", async (req, res) => {
     }
 });
 
+express.use("/api/bubble", async(req, res, next) => {
+    
+    if (req.method === "POST") {
+
+        log("POST bubble called");
+        
+        const chatId = req.body.chatId;
+        const author = req.body.author;
+        const question = req.body.question;
+
+        const meetingBubbleTitle = `Question from ${author}`;
+        
+        const accessToken = await getAuthTokenFromMicrosoft();
+        await sendBubbleMessage(accessToken, chatId, meetingBubbleTitle, question, author);
+
+        res.status(200)
+        res.send();
+    }
+
+    // next();
+});
+
+express.use("/api/activequestion", async(req, res, next) => {
+    
+    if (req.method === "PATCH") {
+
+        log("PATCH active question called");
+        
+        const meetingid = req.body.meetingid;
+        const question = req.body.question;
+
+        const response = await setActiveQuestion(meetingid, question);        
+        // log(response);
+
+        res.status(200)
+        res.send();
+
+    } else if ( req.method === "GET") {
+
+        log("GET active question called");
+
+        const meetingid = req.query.meetingid;
+        // log(meetingid);
+
+        const activeQuestionContent = await getActiveQuestion(meetingid as string);
+        log(activeQuestionContent);
+        res.json({ activeQuestion: activeQuestionContent });
+
+    }
+
+    // next();
+});
+
+express.use("/api/meetingstate", async(req, res, next) => {
+    
+    if (req.method === "PATCH") {
+
+        log("PATCH meeting state called");
+
+        const meetingid = req.body.meetingid;
+        const active = req.body.active;
+
+        const response = await setMeetingState(meetingid, active);        
+        // log(response);
+
+        res.status(200)
+        res.send();
+
+    } else if ( req.method === "GET") {
+
+        log("GET meeting state called");
+
+        const meetingid = req.query.meetingid;
+        // log(meetingid);
+
+        const meetingState = await getMeetingState(meetingid as string);
+        log(meetingState);
+        res.json({ meetingState: meetingState });
+
+    }
+
+});
+
+
 // routing for pages for tabs and connector configuration
 // For more information see: https://www.npmjs.com/package/express-msteams-host
 express.use(MsTeamsPageRouter({
@@ -179,20 +263,20 @@ express.get("/api/role", async (req, res, next) => {
 });
 
 // Sends the bubble notification
-express.get("/api/bubble", async (req, res, next) => {
+// express.get("/api/bubble", async (req, res, next) => {
 
-    // console.log(req.query);
+//     // console.log(req.query);
 
-    const chatId = req.query.chatId;
-    const meetingBubbleTitle = "Contoso";
+//     const chatId = req.query.chatId;
+//     const meetingBubbleTitle = "Contoso";
 
-    // const accessToken = await getAuthTokenFromMicrosoft(process.env.MICROSOFT_APP_ID, process.env.MICROSOFT_APP_PASSWORD);
-    const accessToken = await getAuthTokenFromMicrosoft();
-    await sendBubbleMessage(accessToken, chatId, meetingBubbleTitle);
+//     // const accessToken = await getAuthTokenFromMicrosoft(process.env.MICROSOFT_APP_ID, process.env.MICROSOFT_APP_PASSWORD);
+//     const accessToken = await getAuthTokenFromMicrosoft();
+//     await sendBubbleMessage(accessToken, chatId, meetingBubbleTitle);
 
-    res.sendStatus(200);
-    next();
-});
+//     res.sendStatus(200);
+//     next();
+// });
 
 
 // const getAuthTokenFromMicrosoft = async (appId, appSecret) => {
@@ -246,9 +330,11 @@ const getMeetingParticipant = async (token, meetingId, participantId, tenandId) 
 
 };
 
-const sendBubbleMessage = async (token, chatid, meetingBubbleTitle) => {
+const sendBubbleMessage = async (token, chatid, meetingBubbleTitle, question, author) => {
 
     // /v1/meetings/{meetingId}/participants/{participantId}?tenantId={tenantId}
+
+    const meetingTabURL = `https://${process.env.HOSTNAME}/qnATab/?name={loginHint}&tenant={tid}&group={groupId}&theme={theme}`;
     const res = await fetch(`https://smba.trafficmanager.net/amer/v3/conversations/${chatid}/activities`, {
       method: "POST",
       headers: {
@@ -257,12 +343,20 @@ const sendBubbleMessage = async (token, chatid, meetingBubbleTitle) => {
       },
       body: JSON.stringify({
         type: "message",
-        text: "John Phillips assigned you a weekly todo",
-        summary: "Don't forget to meet with Marketing next week",
+        attachments: [
+            {
+                "contentType": "application/vnd.microsoft.card.hero",
+                "content": {
+                    "title": "QnA",
+                    "subtitle": author,
+                    "text": `"${question}"`,
+                }
+            }
+        ],
         channelData: {
             notification: {
                 alertInMeeting: true,
-                externalResourceUrl: `https://teams.microsoft.com/l/bubble/${process.env.APPLICATION_ID}?url=${process.env.MEETING_TAB_URL}/&height=700&width=700&title=${meetingBubbleTitle}&completionBotId=${process.env.MICROSOFT_APP_ID}`
+                externalResourceUrl: `https://teams.microsoft.com/l/bubble/${process.env.APPLICATION_ID}?url=${meetingTabURL}/&height=300&width=428&title=${meetingBubbleTitle}&completionBotId=${process.env.MICROSOFT_APP_ID}`
             }
         }
     })

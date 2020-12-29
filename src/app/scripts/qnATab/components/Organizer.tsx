@@ -42,7 +42,7 @@ export const Organizer: React.FC<OrganizerProps> = ({ context, name }) => {
     }
 
     useEffect(() => {
-        loadQuestions();
+        // loadQuestions();
         updateQuestions();
     }, []);
 
