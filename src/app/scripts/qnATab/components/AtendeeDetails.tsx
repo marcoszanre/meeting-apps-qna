@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import * as React from "react";
 import { Context } from "@microsoft/teams-js";
 import { Flex, Header, RetryIcon, Card, Avatar, Button, StarIcon, Loader, LikeIcon, Reaction } from "@fluentui/react-northstar";
@@ -12,7 +12,11 @@ type AtendeeDetailsProps = {
 
 const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
 
-    const [promotedQuestions, setPromotedQuestions] = React.useState<listItem[]>();
+    const [promotedQuestions, setPromotedQuestions] = useState<listItem[]>();
+    const [hasNotReacted, setHasNotReacted] = useState<boolean>(true);
+    const [reactionCount, setReactionCount] = useState<number>(10);
+
+
 
     interface listItem {
         key: string;
@@ -20,6 +24,7 @@ const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
         header?: string;
         promoted?: boolean;
         Timestamp?: string;
+        likedBy?: string;
     }
 
     let promotedListItems: listItem[] = promotedQuestions as listItem[];
@@ -39,7 +44,8 @@ const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
                         key: result[index].RowKey,
                         header: result[index].author,
                         promoted: result[index].promoted,
-                        Timestamp: result[index].Timestamp
+                        Timestamp: result[index].Timestamp,
+                        likedBy: result[index].likedBy
                     }
 
                     listItems.push(listItem);
@@ -58,6 +64,13 @@ const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
         const fetchUrl: string = `/api/question?meetingId=${myMeetingId}&author=all`;
         const questionsList = await fetch(fetchUrl); 
         return questionsList.json();
+    };
+
+    const handleReactionClick = async (listitem: listItem) => {
+        const reactionCount = listitem.likedBy!.split(",").length;
+        hasNotReacted ? setReactionCount(reactionCount + 1) : setReactionCount(reactionCount - 1);
+        setHasNotReacted(!hasNotReacted);
+        alert(listitem.likedBy!);
     };
 
     return (
@@ -100,13 +113,15 @@ const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
                 <Card.Body>
                     <Flex column gap="gap.small">
                         <TextExampleShorthand content={listitem.content}/>
+                        <TextExampleShorthand content={listitem.likedBy!}/>
+                        <TextExampleShorthand content={listitem.likedBy!.split(",")[0] } />
                     </Flex>
                 </Card.Body>
-                {/* <Card.Footer>
+                <Card.Footer>
                     <Flex space="between">
-                        <Reaction icon={<LikeIcon />} content={10} />
+                        <Reaction onClick={() => handleReactionClick(listitem)} icon={<LikeIcon outline={hasNotReacted} />} content={listitem.likedBy!.split(",").length } />
                     </Flex>
-                </Card.Footer> */}
+                </Card.Footer>
             </Card>
             </Flex>
             )

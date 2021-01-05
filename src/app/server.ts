@@ -187,20 +187,20 @@ express.use("/api/activequestion", async(req, res, next) => {
 
 express.use("/api/meetingstate", async(req, res, next) => {
     
-    if (req.method === "PATCH") {
+    if (req.method === "POST") {
 
-        log("PATCH meeting state called");
+        log("POST meeting state called");
 
         const meetingid = req.body.meetingid;
         const active = req.body.active;
 
-        const response = await setMeetingState(meetingid, active);        
+        const response = await setMeetingState(meetingid, active);
         // log(response);
 
         res.status(200)
         res.send();
 
-    } else if ( req.method === "GET") {
+    } else if (req.method === "GET") {
 
         log("GET meeting state called");
 

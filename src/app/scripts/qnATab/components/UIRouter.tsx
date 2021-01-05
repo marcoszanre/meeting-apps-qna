@@ -6,17 +6,24 @@ import { Atendee } from "./Atendee";
 import { OrganizerDetails } from "./OrganizerDetails";
 import TaskContent from "./TaskContent";
 import AtendeeDetails from "./AtendeeDetails";
+import MeetingClosed from "./MeetingClosed";
 
 
 type UIRouterProps = {
   role: string,
   context: Context,
   name: string,
+  active: boolean,
 }
 
-export const UIRouter: FC<UIRouterProps> = ({ role, context, name }) => {
+export const UIRouter: FC<UIRouterProps> = ({ role, context, name, active }) => {
 
   const frameContext: string = context.frameContext as string;
+
+  // handle default meeting State
+  if (active == false && role !== "Organizer") {
+    return <MeetingClosed />
+  }
 
   // handle default Task State
   if (frameContext === "task") {

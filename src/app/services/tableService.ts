@@ -28,6 +28,7 @@ const insertQuestion = (meetingid: string, author: string, question: string) => 
             author: {_: author},
             question: {_: question},
             promoted: {_: false},
+            likedBy: {_: ""}
         };
 
         tableSvc.insertEntity("questionsTable", questionReference, (error, result, response) => {
@@ -131,7 +132,8 @@ const getQuestions = async (meetingid: string, author: string) => {
                     meetingId: result.entries[i].meetingid._,
                     author: result.entries[i].author._,
                     question: result.entries[i].question._,
-                    RowKey: result.entries[i].RowKey._
+                    RowKey: result.entries[i].RowKey._,
+                    likedBy: result.entries[i].likedBy._
                   };
 
                   myQuestions.push(question);   
@@ -167,7 +169,8 @@ const getAllQuestions = async (meetingid: string) => {
                     question: result.entries[i].question._,
                     promoted: result.entries[i].promoted._,
                     RowKey: result.entries[i].RowKey._,
-                    Timestamp: result.entries[i].Timestamp._
+                    Timestamp: result.entries[i].Timestamp._,
+                    likedBy: result.entries[i].likedBy._
                   };
 
                   myQuestions.push(question);   
@@ -241,7 +244,7 @@ const getActiveQuestion = async (rowkey: string) => {
 
 const setMeetingState = (rowkey: string, active: boolean) => {
 
-    return new Promise(async (resolve, reject) => { 
+    return new Promise(async (resolve, reject) => {
         const meetingReference = {
             PartitionKey: {_: "meetingStatePartition"},
             RowKey: {_: rowkey},
@@ -250,7 +253,7 @@ const setMeetingState = (rowkey: string, active: boolean) => {
 
         const isThereAlreadyAMeetingState = await getMeetingState(rowkey);
         if (isThereAlreadyAMeetingState === "not found") {
-            // no active questions, create one
+            // no active meeting state, create one
             tableSvc.insertEntity("questionsTable", meetingReference, (error, result, response) => {
                 if (!error) {
                   // Entity inserted
@@ -287,10 +290,10 @@ const getMeetingState = async (rowkey: string) => {
                 // result contains the entity
                 const meetingState = {
                     RowKey: result.RowKey._,
-                    state: result.state._
+                    active: result.active._
                 };
                 // log(question);
-                resolve(meetingState.state);
+                resolve(meetingState.active);
             } else {
                 resolve("not found");
             }
@@ -305,6 +308,7 @@ interface Question {
     RowKey: string;
     promoted?: boolean;
     Timestamp?: string;
+    likedBy?: string;
 }
 
 

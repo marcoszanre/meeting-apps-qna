@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useTeams } from "msteams-react-base-component";
 import * as microsoftTeams from "@microsoft/teams-js";
 import jwt_decode from "jwt-decode";
-import { Question } from "../../services/tableService";
+import { Question, setMeetingState } from "../../services/tableService";
 import { UIRouter } from "./components/UIRouter";
 
 /**
@@ -19,6 +19,7 @@ export const QnATab = () => {
     const [error, setError] = useState<string>();
     // const [myQuestions, setMyQuestions] = useState<listItem[]>();
     const [userRole, setUserRole] = useState<string>();
+    const [isMeetingStateActive, setIsMeetingStateActive] = useState<boolean>();
 
 
     useEffect(() => {
@@ -57,8 +58,48 @@ export const QnATab = () => {
         if (name && context) {
             // updateQuestions();
             getParticipantRole();
+            createMeetingState();
         }
     }, [name]);
+
+    const createMeetingState = async () => {
+        
+        const fetchUrl: string = `/api/meetingstate?meetingid=${context?.meetingId!}`;
+        const meetingStateResponse = await (await fetch(fetchUrl)).json();
+        console.log("meeting state is " + meetingStateResponse.meetingState);
+        console.log(meetingStateResponse);
+
+        if (meetingStateResponse.meetingState === "not found") {
+
+            setIsMeetingStateActive(true);
+            
+            const meetingData = {
+                meetingid: context?.meetingId as string,
+                active: true as boolean,
+            };
+    
+            const body = JSON.stringify(meetingData);
+            // // console.log(body);
+    
+            const res = await fetch("/api/meetingstate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: body
+            });
+
+            console.log(res.status);
+
+            // console.log("no meeting state found");
+    
+        } else {
+
+            setIsMeetingStateActive(meetingStateResponse.meetingState);
+            console.log("meeting state is " + meetingStateResponse.meetingState);
+        }
+        
+    }
 
     // useEffect(() => {
     //     if (userRole) {
@@ -90,7 +131,7 @@ export const QnATab = () => {
         <Provider theme={theme}>
 
             {/* {userRole ? <UIRouter role={userRole} context={context!} name={name!}/> : <Loader label="Loading details" />} */}
-            {userRole && <UIRouter role={userRole} context={context!} name={name!}/>}
+            {userRole && <UIRouter role={userRole} context={context!} name={name!} active={isMeetingStateActive!} />}
 
         </Provider>
     );

@@ -1,4 +1,4 @@
-import { Flex, Header, Segment, Input, Dialog, CloseIcon, Button, Loader, TextArea, List, ListProps, TrashCanIcon, EditIcon, AcceptIcon, EyeIcon, EyeSlashIcon, SearchIcon, RetryIcon } from "@fluentui/react-northstar";
+import { Flex, Header, Segment, Input, Dialog, CloseIcon, Button, Loader, TextArea, List, ListProps, TrashCanIcon, EditIcon, AcceptIcon, EyeIcon, EyeSlashIcon, SearchIcon, RetryIcon, BanIcon, CallRecordingIcon } from "@fluentui/react-northstar";
 import { Context } from "@microsoft/teams-js";
 import * as React from "react";
 import { useState, useEffect } from "react";
@@ -23,7 +23,9 @@ export const Organizer: React.FC<OrganizerProps> = ({ context, name }) => {
     const [notPromotedBtnsDisabled, setNotPromotedBtnsDisabled] = useState<boolean>(true);
     const [promotedBtnsDisabled, setPromotedBtnsDisabled] = useState<boolean>(true);
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState<boolean>(false);
+    const [isCloseMeetingDialogOpen, setIsCloseMeetingDialogOpen] = useState<boolean>(false);
     const [isNotEditingQuestion, setIsNotEditingQuestion] = useState<boolean>(true);
+    const [isMeetingStateActive, setIsMeetingStateActive] = useState<boolean>(true);
     const [dialogContent, setDialogContent] = useState<string>();
     const [editedQuestion, setEditedQuestion] = useState<string>();
     const [isNotAllowedToSubmitQuestion, setIsNotAllowedToSubmitQuestion] = useState<boolean>(true);
@@ -44,6 +46,7 @@ export const Organizer: React.FC<OrganizerProps> = ({ context, name }) => {
     useEffect(() => {
         // loadQuestions();
         updateQuestions();
+        loadMeetingState();
     }, []);
 
     const listItems: listItem[] = allQuestions as listItem[];
@@ -151,6 +154,40 @@ export const Organizer: React.FC<OrganizerProps> = ({ context, name }) => {
         updateTableQuestion("false", true);
     };
 
+    const handleCloseMeetingBtnClicked = async (state: boolean) => {
+        const meetingData = {
+            meetingid: context?.meetingId,
+            active: state,
+        };
+
+        const body = JSON.stringify(meetingData);
+        // console.log(body);
+
+        const res = await fetch("/api/meetingstate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: body
+        });
+
+        console.log("the meeting has been closed");
+        setIsCloseMeetingDialogOpen(false);
+        setIsMeetingStateActive(state);
+
+    }
+    
+    const loadMeetingState = async () => {
+
+        const fetchUrl: string = `/api/meetingstate?meetingid=${context.meetingId}`;
+
+        const questionUpdateReponse = await (await fetch(fetchUrl)).json();
+        console.log(questionUpdateReponse.meetingState);
+        
+        setIsMeetingStateActive(questionUpdateReponse.meetingState);
+
+    }
+
     const handleRemoveBtnClicked = async () => {
         console.log("remove button clicked " + dialogContent);
         setIsRemoveDialogOpen(false);
@@ -232,7 +269,8 @@ export const Organizer: React.FC<OrganizerProps> = ({ context, name }) => {
                 paddingLeft: "1.250rem"
                 // paddingBottom: "0.625rem"
         }}/>
-        <RetryIcon onClick={updateQuestions} styles={{
+        <RetryIcon aria-label="Refresh Questions" 
+            onClick={updateQuestions} styles={{
                     position: "absolute",
                     right: "0",
                     marginTop: "1.625rem",
@@ -240,6 +278,38 @@ export const Organizer: React.FC<OrganizerProps> = ({ context, name }) => {
                     top: "0",
                     cursor: "pointer"
         }}/>
+        <Dialog
+                        open={isCloseMeetingDialogOpen}
+                        onOpen={() => { setIsCloseMeetingDialogOpen(true) }}
+                        onCancel={() => setIsCloseMeetingDialogOpen(false)}
+                        onConfirm={() => handleCloseMeetingBtnClicked(!isMeetingStateActive)}
+                        confirmButton="Confirm"
+                        cancelButton="Cancel"
+                        content={context.meetingId}
+                        header={isMeetingStateActive ? "Are you sure you want to close this meeting?" : "Are you sure you want to reopen this meeting?"}
+                        headerAction={{
+                            icon: <CloseIcon />,
+                            title: 'Close',
+                            onClick: () => setIsCloseMeetingDialogOpen(false),
+                    }}
+                    trigger={isMeetingStateActive ? 
+                        <BanIcon aria-label="Close Meeting" styles={{
+                            position: "absolute",
+                            right: "0",
+                            marginTop: "1.625rem",
+                            marginRight: "3.625rem",
+                            top: "0",
+                            cursor: "pointer"
+                    }} /> : <CallRecordingIcon aria-label="Open Meeting" styles={{
+                        position: "absolute",
+                        right: "0",
+                        marginTop: "1.625rem",
+                        marginRight: "3.625rem",
+                        top: "0",
+                        cursor: "pointer"
+                }} />
+                }
+        />
         
     </Flex>
 
