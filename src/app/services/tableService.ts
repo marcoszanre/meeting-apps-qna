@@ -16,6 +16,13 @@ const initTableSvc = () => {
           log("table service done");
         }
     });
+
+    tableSvc.createTableIfNotExists("likesTable", (error, result, response) => {
+        if (!error) {
+          // Table exists or created
+          log("table service likes done");
+        }
+    });
 };
 
 const insertQuestion = (meetingid: string, author: string, question: string) => {
@@ -28,7 +35,7 @@ const insertQuestion = (meetingid: string, author: string, question: string) => 
             author: {_: author},
             question: {_: question},
             promoted: {_: false},
-            likedBy: {_: ""}
+            likedBy: {_: 0}
         };
 
         tableSvc.insertEntity("questionsTable", questionReference, (error, result, response) => {
@@ -301,6 +308,170 @@ const getMeetingState = async (rowkey: string) => {
     });
 };
 
+const getLike = async (questionId: string, userID: string) => {
+
+    log("get liked called");
+    log(questionId);
+    log(userID);
+
+
+    return new Promise((resolve) => {
+
+        const query = new azure.TableQuery()
+            .where("userID eq ?", userID)
+            .and("questionId eq ?", questionId);
+
+        tableSvc.queryEntities("likesTable", query, null, (error, result) => {
+            log("the result is:");
+            log(result);
+
+            if (!error) {
+              // query was successful
+              log(result.entries.length);
+              if (result.entries.length == 0) {
+                log("like NOT found");
+                resolve(false);
+              } else {
+                log("like found");
+                resolve(true);
+              }
+            } else {
+              log("like NOT found");
+              resolve(false);
+            }
+        });
+    });
+};
+
+const getLikeRow = async (questionId: string, userID: string) => {
+
+    log("get liked row called");
+    log(questionId);
+    log(userID);
+
+
+    return new Promise((resolve) => {
+
+        const query = new azure.TableQuery()
+            .where("userID eq ?", userID)
+            .and("questionId eq ?", questionId);
+
+        tableSvc.queryEntities("likesTable", query, null, (error, result) => {
+            log("the result is:");
+            //log(result);
+
+            if (!error) {
+              // query was successful
+              resolve(result.entries[0].RowKey._)
+            } else {
+              resolve(false);
+            }
+        });
+    });
+};
+
+const insertLike = async (questionId: string, userID: string) => {
+
+    return new Promise((resolve) => {
+
+            const likeReference = {
+                PartitionKey: {_: "likesPartition"},
+                RowKey: {_: uuidv4()},
+                questionId: {_: questionId},
+                userID: {_: userID}
+            };
+
+            tableSvc.insertEntity("likesTable", likeReference, (error, result, response) => {
+                if (!error) {
+                  // Entity inserted
+                  log("success!");
+                  resolve("OK");
+                } else {
+                  log(error);
+                  resolve("Error");
+                }
+            });
+    });
+};
+
+const removeLike = async (questionId: string, userID: string) => {
+
+    log("remove like called");
+
+    return new Promise(async (resolve) => {
+
+        const rowkey = await getLikeRow(questionId, userID);
+        // log(rowkey);
+
+        const likeReference = {
+            PartitionKey: {_: "likesPartition"},
+            RowKey: {_: rowkey}
+        };
+
+        tableSvc.deleteEntity("likesTable", likeReference, (error, result, response) => {
+            if (!error) {
+              // Entity inserted
+              log("success!");
+              resolve("OK")
+            } else {
+              log(error);
+              resolve("Error")
+            }
+        });
+
+    });
+};
+
+const updateLikeAggregate = async (questionId: string) => { 
+
+    let likeCount: number;
+
+    const query = new azure.TableQuery()
+            .where("questionId eq ?", questionId)
+
+    tableSvc.queryEntities("likesTable", query, null, (error, result) => {
+            // log("the result is:");
+            // log(result);
+
+            if (!error) {
+              // query was successful
+              likeCount = result.entries.length;
+
+              // update table like count
+              const questionReference = {
+                PartitionKey: {_: "questionsPartition"},
+                RowKey: {_: questionId},
+                likedBy: {_: likeCount}
+              };
+
+            tableSvc.mergeEntity("questionsTable", questionReference, (error, result, response) => {
+                if (!error) {
+                  // Entity inserted
+                  log("success!");
+                } else {
+                  log(error);
+                }
+            });
+        }
+    });
+
+}
+
+const toggleLike = async (questionId: string, userID: string) => {
+
+        const isLiked = await getLike(questionId, userID);
+        log("isLiked = " + isLiked);
+
+        if (isLiked) {
+            await removeLike(questionId, userID);
+
+        } else {
+            await insertLike(questionId, userID);
+        }
+
+        await updateLikeAggregate(questionId);
+};
+
 interface Question {
     meetingId: string;
     author: string;
@@ -308,7 +479,7 @@ interface Question {
     RowKey: string;
     promoted?: boolean;
     Timestamp?: string;
-    likedBy?: string;
+    likedBy?: number;
 }
 
 
@@ -324,5 +495,7 @@ export {
     setActiveQuestion,
     getActiveQuestion,
     setMeetingState,
-    getMeetingState
+    getMeetingState,
+    getLike,
+    toggleLike
 }

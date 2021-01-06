@@ -5,7 +5,7 @@ import * as morgan from "morgan";
 import { MsTeamsApiRouter, MsTeamsPageRouter } from "express-msteams-host";
 import * as debug from "debug";
 import * as compression from "compression";
-import { initTableSvc, insertQuestion, getQuestions, deleteQuestion, tableSvcUpdateQuestion, getAllQuestions, tableSvcPromoteDemoteQuestion, setActiveQuestion, getActiveQuestion, setMeetingState, getMeetingState } from "./services/tableService";
+import { initTableSvc, insertQuestion, getQuestions, deleteQuestion, tableSvcUpdateQuestion, getAllQuestions, tableSvcPromoteDemoteQuestion, setActiveQuestion, getActiveQuestion, setMeetingState, getMeetingState, toggleLike, getLike } from "./services/tableService";
 
 
 
@@ -210,6 +210,42 @@ express.use("/api/meetingstate", async(req, res, next) => {
         const meetingState = await getMeetingState(meetingid as string);
         log(meetingState);
         res.json({ meetingState: meetingState });
+
+    }
+
+});
+
+express.use("/api/like", async(req, res, next) => {
+    
+    if (req.method === "POST") {
+
+        log("POST like called");
+
+        const questionId = req.body.questionId as string;
+        const userID = req.body.userID as string;
+
+        log(questionId);
+        log(userID);
+
+        const response = await toggleLike(questionId, userID);
+        // log(response);
+
+        res.status(200)
+        res.send();
+
+    } else if (req.method === "GET") {
+
+        log("GET like called");
+
+        const questionId = req.query.questionId as string;
+        const userID = req.query.userID as string;
+        
+        log(questionId);
+        log(userID);
+
+        const like = await getLike(questionId, userID);
+        log(like);
+        res.json({ like: like });
 
     }
 

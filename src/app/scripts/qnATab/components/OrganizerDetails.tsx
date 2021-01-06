@@ -21,6 +21,7 @@ export const OrganizerDetails: FC<OrganizerDetailsProps> = ({ context, name }) =
         header?: string;
         promoted?: boolean;
         Timestamp?: string;
+        likedBy: number;
     }
 
     let promotedListItems: listItem[] = promotedQuestions as listItem[];
@@ -40,7 +41,8 @@ export const OrganizerDetails: FC<OrganizerDetailsProps> = ({ context, name }) =
                         key: result[index].RowKey,
                         header: result[index].author,
                         promoted: result[index].promoted,
-                        Timestamp: result[index].Timestamp
+                        Timestamp: result[index].Timestamp,
+                        likedBy: result[index].likedBy!
                     }
 
                     listItems.push(listItem);
@@ -174,7 +176,9 @@ export const OrganizerDetails: FC<OrganizerDetailsProps> = ({ context, name }) =
                 <Card.Footer>
                     <Flex space="between">
                         <Button primary onClick={() => sendBubble(listitem)} content="Promote" />
-                        {/* <Button icon={<StarIcon />} iconOnly text title="Asked" /> */}
+                        <Flex vAlign="center">
+                            <TextExampleShorthand content={`${listitem.likedBy} likes`} />
+                        </Flex>
                     </Flex>
                 </Card.Footer>
             </Card>

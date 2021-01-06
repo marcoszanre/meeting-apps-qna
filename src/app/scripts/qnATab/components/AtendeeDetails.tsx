@@ -15,6 +15,7 @@ const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
     const [promotedQuestions, setPromotedQuestions] = useState<listItem[]>();
     const [hasNotReacted, setHasNotReacted] = useState<boolean>(true);
     const [reactionCount, setReactionCount] = useState<number>(10);
+    const [log, setLog] = useState<string>("");
 
 
 
@@ -24,7 +25,7 @@ const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
         header?: string;
         promoted?: boolean;
         Timestamp?: string;
-        likedBy?: string;
+        likedBy: number;
     }
 
     let promotedListItems: listItem[] = promotedQuestions as listItem[];
@@ -45,7 +46,7 @@ const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
                         header: result[index].author,
                         promoted: result[index].promoted,
                         Timestamp: result[index].Timestamp,
-                        likedBy: result[index].likedBy
+                        likedBy: result[index].likedBy!
                     }
 
                     listItems.push(listItem);
@@ -66,11 +67,48 @@ const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
         return questionsList.json();
     };
 
+
     const handleReactionClick = async (listitem: listItem) => {
-        const reactionCount = listitem.likedBy!.split(",").length;
-        hasNotReacted ? setReactionCount(reactionCount + 1) : setReactionCount(reactionCount - 1);
-        setHasNotReacted(!hasNotReacted);
-        alert(listitem.likedBy!);
+
+        const key = listitem.key as string;
+        const userId = context.userObjectId as string;
+        // alert(key);
+        // alert(userId);
+        
+        const fetchUrl: string = `/api/like?questionId=${key}&userID=${userId}`;
+        const likeResponse = await (await fetch(fetchUrl)).json();
+        // console.log("meeting state is " + meetingStateResponse.meetingState);
+        // console.log(meetingStateResponse);
+       
+        const likeData = {
+            questionId: listitem.key,
+            userID: context.userObjectId,
+        };
+
+        const body = JSON.stringify(likeData);
+
+        const res = await fetch("/api/like", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: body
+        });
+
+        // console.log(res.status);
+
+        // check if user has already liked or not
+        !likeResponse.like ? listitem.likedBy! += 1 : listitem.likedBy! -= 1;
+
+        setPromotedQuestions(
+            promotedQuestions!.map(item => 
+                item.key === listitem.key 
+                ? {...item, likedBy : listitem.likedBy!} 
+                : item 
+        ));
+
+        // setHasNotReacted(!hasNotReacted);
+        // alert(listitem.likedBy!);
     };
 
     return (
@@ -97,6 +135,9 @@ const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
                     cursor: "pointer"
         }}/>
 
+        <TextExampleShorthand content={log}/>
+
+
         {promotedQuestions ? promotedQuestions.map((listitem: listItem) => 
             
             <Flex column gap="gap.medium">
@@ -113,13 +154,11 @@ const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
                 <Card.Body>
                     <Flex column gap="gap.small">
                         <TextExampleShorthand content={listitem.content}/>
-                        <TextExampleShorthand content={listitem.likedBy!}/>
-                        <TextExampleShorthand content={listitem.likedBy!.split(",")[0] } />
                     </Flex>
                 </Card.Body>
                 <Card.Footer>
                     <Flex space="between">
-                        <Reaction onClick={() => handleReactionClick(listitem)} icon={<LikeIcon outline={hasNotReacted} />} content={listitem.likedBy!.split(",").length } />
+                        <Reaction onClick={() => handleReactionClick(listitem)} icon={<LikeIcon outline={ false } />} content={ listitem.likedBy } />
                     </Flex>
                 </Card.Footer>
             </Card>
