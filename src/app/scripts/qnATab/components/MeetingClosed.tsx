@@ -13,8 +13,8 @@ const MeetingClosed: FC = () => {
             </Flex.Item>
         </Flex>
         </>
-    )
+    );
 
-}
+};
 
 export default MeetingClosed;

@@ -5,11 +5,11 @@ import { FC, useEffect, useState } from "react";
 import * as microsoftTeams from "@microsoft/teams-js";
 
 
-type TaskContentProps = {
+interface ITaskContentProps {
     context: Context;
 }
 
-const TaskContent: FC<TaskContentProps> = ({ context }) => { 
+const TaskContent: FC<ITaskContentProps> = ({ context }) => {
 
     const [activeQuestion, setActiveQuestion] = useState<string>();
 
@@ -18,13 +18,13 @@ const TaskContent: FC<TaskContentProps> = ({ context }) => {
         const res = await fetch(`/api/activequestion?meetingid=${meetingid}`);
         const json = await res.json();
         setActiveQuestion(json.activeQuestion);
-    }
+    };
 
     // call load active questions
     useEffect(() => {
         retrieveActiveQuestion();
     }, []);
-    
+
     return (
         <>
         <Flex column space="between">
@@ -46,8 +46,8 @@ const TaskContent: FC<TaskContentProps> = ({ context }) => {
         }}/>
         </Flex>
         </>
-    )
-    
-}
+    );
+
+};
 
 export default TaskContent;

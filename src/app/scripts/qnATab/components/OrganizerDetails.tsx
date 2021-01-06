@@ -6,16 +6,16 @@ import { Question } from "../../../services/tableService";
 import CardsList from "./CardsList";
 import TextExampleShorthand from "./Text";
 
-type OrganizerDetailsProps = {
-    context: Context,
-    name: string,
+interface IOrganizerDetailsProps {
+    context: Context;
+    name: string;
 }
 
-export const OrganizerDetails: FC<OrganizerDetailsProps> = ({ context, name }) => {
+export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) => {
 
-    const [promotedQuestions, setPromotedQuestions] = useState<listItem[]>();
+    const [promotedQuestions, setPromotedQuestions] = useState<IListItem[]>();
 
-    interface listItem {
+    interface IListItem {
         key: string;
         content: string;
         header?: string;
@@ -24,7 +24,7 @@ export const OrganizerDetails: FC<OrganizerDetailsProps> = ({ context, name }) =
         likedBy: number;
     }
 
-    let promotedListItems: listItem[] = promotedQuestions as listItem[];
+    let promotedListItems: IListItem[] = promotedQuestions as IListItem[];
 
     useEffect(() => {
         updateQuestions();
@@ -32,65 +32,37 @@ export const OrganizerDetails: FC<OrganizerDetailsProps> = ({ context, name }) =
 
     const updateQuestions = async () => {
 
-        let listItems: listItem[] = [];
-            loadQuestions().then((result: Question[]) => {
-                for (let index = 0; index < result.length; index++) {
-                    
-                    const listItem: listItem = {
-                        content: result[index].question,
-                        key: result[index].RowKey,
-                        header: result[index].author,
-                        promoted: result[index].promoted,
-                        Timestamp: result[index].Timestamp,
-                        likedBy: result[index].likedBy!
-                    }
+        const listItems: IListItem[] = [];
+        loadQuestions().then((result: Question[]) => {
+            for (let index = 0; index < result.length; index++) {
 
-                    listItems.push(listItem);
-                }
+                const listItem: IListItem = {
+                    content: result[index].question,
+                    key: result[index].RowKey,
+                    header: result[index].author,
+                    promoted: result[index].promoted,
+                    Timestamp: result[index].Timestamp,
+                    likedBy: result[index].likedBy!
+                };
 
-                promotedListItems = listItems.filter(item => item.promoted === true);
-                setPromotedQuestions(promotedListItems);
-                // console.log(promotedListItems);
+                listItems.push(listItem);
+            }
 
-            });
-    }
+            promotedListItems = listItems.filter(item => item.promoted === true);
+            setPromotedQuestions(promotedListItems);
+            // console.log(promotedListItems);
 
-    // const cards = promotedQuestions.map((listitem: listItem) => 
-    //     <Flex column gap="gap.medium">
-    //     <Card fluid key={listitem.key}>
-    //         <Card.Header>
-    //             <Flex gap="gap.small">
-    //                 <Avatar name="20"/>
-    //                 <Flex column>
-    //                     <TextExampleShorthand content={listitem.header!}/>
-    //                     <TextExampleShorthand content={listitem.Timestamp!.split("T")[0]}/>
-    //                 </Flex>
-    //             </Flex>
-    //         </Card.Header>
-    //         <Card.Body>
-    //             <Flex column gap="gap.small">
-    //                 <TextExampleShorthand content={listitem.content}/>
-    //             </Flex>
-    //         </Card.Body>
-    //         <Card.Footer>
-    //             <Flex space="between">
-    //                 <Button content="Promote" />
-    //             </Flex>
-    //         </Card.Footer>
-    //     </Card>
-    //     </Flex>
-    // );
-    
-
+        });
+    };
 
     const loadQuestions = async () => {
         const myMeetingId: string = context?.meetingId as string;
         const fetchUrl: string = `/api/question?meetingId=${myMeetingId}&author=all`;
-        const questionsList = await fetch(fetchUrl); 
+        const questionsList = await fetch(fetchUrl);
         return questionsList.json();
     };
 
-    const sendBubble = async (listitem: listItem) => {
+    const sendBubble = async (listitem: IListItem) => {
 
         const activeQuestionData = {
             meetingid: context?.meetingId,
@@ -129,7 +101,7 @@ export const OrganizerDetails: FC<OrganizerDetailsProps> = ({ context, name }) =
 
         // await fetch(`/api/bubble?chatId=${context.chatId}`);
         // alert(listitem.key);
-    }
+    };
 
     return (
         <>
@@ -155,8 +127,8 @@ export const OrganizerDetails: FC<OrganizerDetailsProps> = ({ context, name }) =
                     cursor: "pointer"
         }}/>
 
-        {promotedQuestions ? promotedQuestions.map((listitem: listItem) => 
-            
+        {promotedQuestions ? promotedQuestions.map((listitem: IListItem) =>
+
             <Flex column gap="gap.medium">
             <Card fluid key={listitem.key}>
                 <Card.Header>
@@ -185,10 +157,10 @@ export const OrganizerDetails: FC<OrganizerDetailsProps> = ({ context, name }) =
             </Flex>
             )
             : <Loader label="Loading promoted questions" />}
-        
+
         </Flex>
 
         </>
-  )
+  );
 
 };

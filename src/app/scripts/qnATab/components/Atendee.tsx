@@ -4,15 +4,15 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { Question } from "../../../services/tableService";
 
-type OrganizerProps = {
-    context: Context,
-    name: string,
+interface IOrganizerProps {
+    context: Context;
+    name: string;
 }
 
-export const Atendee: React.FC<OrganizerProps> = ({ context, name }) => {
+export const Atendee: React.FC<IOrganizerProps> = ({ context, name }) => {
 
     const [question, setQuestion] = useState<string>();
-    const [myQuestions, setMyQuestions] = useState<listItem[]>();
+    const [myQuestions, setMyQuestions] = useState<IListItem[]>();
     const [btnLoading, setBtnLoading] = useState<boolean>(false);
     const [btnUpdateLoading, setbtnUpdateLoading] = useState<boolean>(false);
     const [selectedListIndex, setSelectedListIndex] = useState<number>(-1);
@@ -25,7 +25,7 @@ export const Atendee: React.FC<OrganizerProps> = ({ context, name }) => {
 
 
 
-    interface listItem {
+    interface IListItem {
         key: string;
         content: string;
     }
@@ -35,29 +35,29 @@ export const Atendee: React.FC<OrganizerProps> = ({ context, name }) => {
         updateQuestions();
     }, []);
 
-    const listItems: listItem[] = myQuestions as listItem[];
+    const listItems: IListItem[] = myQuestions as IListItem[];
 
     const updateQuestions = async () => {
 
-        let listItems: listItem[] = [];
-            loadQuestions().then((result: Question[]) => {
-                for (let index = 0; index < result.length; index++) {
-                    
-                    const listItem: listItem = {
-                        content: result[index].question,
-                        key: result[index].RowKey
-                    }
+        const listItems: IListItem[] = [];
+        loadQuestions().then((result: Question[]) => {
+            for (let index = 0; index < result.length; index++) {
 
-                    listItems.push(listItem);
-                }
+                const listItem: IListItem = {
+                    content: result[index].question,
+                    key: result[index].RowKey
+                };
 
-                setMyQuestions(listItems);
-            });
-    }
+                listItems.push(listItem);
+            }
+
+            setMyQuestions(listItems);
+        });
+    };
 
     const remoteQuestionFromArray = async () => {
         setMyQuestions(myQuestions?.filter((item) => item.key !== myQuestions![selectedListIndex!].key));
-    }
+    };
 
     const loadQuestions = async () => {
 
@@ -65,11 +65,11 @@ export const Atendee: React.FC<OrganizerProps> = ({ context, name }) => {
         const myMeetingId: string = context?.meetingId as string;
         const myName: string = name as string;
         const fetchUrl: string = `/api/question?meetingId=${myMeetingId}&author=${myName}`;
-        const questionsList = await fetch(fetchUrl);        
+        const questionsList = await fetch(fetchUrl);
         return questionsList.json();
     };
 
-    const ListExample = () => <List 
+    const ListExample = () => <List
                                 selectable
                                 selectedIndex={selectedListIndex}
                                 onSelectedIndexChange={(e, newProps: ListProps) => {
@@ -82,7 +82,7 @@ export const Atendee: React.FC<OrganizerProps> = ({ context, name }) => {
                                 }}
                                 items={listItems} variables={{
                                     rootPadding: "0rem"
-    }}/>
+    }}/>;
 
     const submitQuestion = async () => {
         // console.log(question);
@@ -119,27 +119,29 @@ export const Atendee: React.FC<OrganizerProps> = ({ context, name }) => {
     const handleEditBtnClicked = () => {
         setEditedQuestion(myQuestions![selectedListIndex!].content);
         setIsNotEditingQuestion(false);
-        console.log("edit clicked");
+        // console.log("edit clicked");
         // console.log("edit btn clicked " + myQuestions![selectedListIndex!].content);
     };
 
     const handleRemoveBtnClicked = async () => {
-        console.log("remove button clicked " + dialogContent);
+        // console.log("remove button clicked " + dialogContent);
         setIsRemoveDialogOpen(false);
 
         const res = await fetch(`/api/question?rowkey=${myQuestions![selectedListIndex!].key}`, {
             method: "DELETE"
         });
 
-        console.log(res.status);
+        // console.log(res.status);
         if (res.status === 200) {
             remoteQuestionFromArray();
-        } else (console.log("an error happened"));
+        } else {
+            // console.log("an error happened");
+        }
 
     };
 
     const handleCancelBtnClicked = async () => {
-        console.log("cancel button clicked");
+        // console.log("cancel button clicked");
         !isNotEditingQuestion && setIsNotEditingQuestion(true);
         setSelectedListIndex(-1);
         setEditedQuestion("");
@@ -180,7 +182,9 @@ export const Atendee: React.FC<OrganizerProps> = ({ context, name }) => {
         if (questionUpdateReponse.status === 200) {
             setEditedQuestion("");
             setIsNotEditingQuestion(true);
-        } else (console.log("an error happened"));
+        } else {
+            // console.log("an error happened");
+        }
 
         // console.log(questionUpdateReponse);
 
@@ -209,7 +213,7 @@ export const Atendee: React.FC<OrganizerProps> = ({ context, name }) => {
                     top: "0",
                     cursor: "pointer"
         }}/>
-        
+
         <Segment>
                 <Header as="h2" content="Ask a question" />
                 <TextArea disabled={btnLoading} value={question} onChange={handleChange} fluid placeholder="Type your question here..." resize="vertical"/>
@@ -228,7 +232,7 @@ export const Atendee: React.FC<OrganizerProps> = ({ context, name }) => {
                     <Button disabled={removeBtnDisabled} onClick={handleEditBtnClicked} icon={<EditIcon />} content="Edit" iconPosition="before" />
                     <Dialog
                         open={isRemoveDialogOpen}
-                        onOpen={() => { setIsRemoveDialogOpen(true); setDialogContent(myQuestions![selectedListIndex!].content) }}
+                        onOpen={() => { setIsRemoveDialogOpen(true); setDialogContent(myQuestions![selectedListIndex!].content); }}
                         onCancel={() => setIsRemoveDialogOpen(false)}
                         onConfirm={handleRemoveBtnClicked}
                         confirmButton="Confirm"
@@ -237,7 +241,7 @@ export const Atendee: React.FC<OrganizerProps> = ({ context, name }) => {
                         header="Remove this question?"
                         headerAction={{
                             icon: <CloseIcon />,
-                            title: 'Close',
+                            title: "Close",
                             onClick: () => setIsRemoveDialogOpen(false),
                     }}
                     trigger={<Button disabled={removeBtnDisabled} icon={<TrashCanIcon />} content="Remove" iconPosition="before" />}
@@ -259,6 +263,5 @@ export const Atendee: React.FC<OrganizerProps> = ({ context, name }) => {
         </Flex.Item>
     </Flex>
     </>
-  )
-
+  );
 };

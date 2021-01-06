@@ -132,41 +132,41 @@ express.use("/api/question", async (req, res) => {
     }
 });
 
-express.use("/api/bubble", async(req, res, next) => {
-    
+express.use("/api/bubble", async (req, res, next) => {
+
     if (req.method === "POST") {
 
         log("POST bubble called");
-        
+
         const chatId = req.body.chatId;
         const author = req.body.author;
         const question = req.body.question;
 
         const meetingBubbleTitle = `Question from ${author}`;
-        
+
         const accessToken = await getAuthTokenFromMicrosoft();
         await sendBubbleMessage(accessToken, chatId, meetingBubbleTitle, question, author);
 
-        res.status(200)
+        res.status(200);
         res.send();
     }
 
     // next();
 });
 
-express.use("/api/activequestion", async(req, res, next) => {
-    
+express.use("/api/activequestion", async (req, res, next) => {
+
     if (req.method === "PATCH") {
 
         log("PATCH active question called");
-        
+
         const meetingid = req.body.meetingid;
         const question = req.body.question;
 
-        const response = await setActiveQuestion(meetingid, question);        
+        const response = await setActiveQuestion(meetingid, question);
         // log(response);
 
-        res.status(200)
+        res.status(200);
         res.send();
 
     } else if ( req.method === "GET") {
@@ -185,8 +185,8 @@ express.use("/api/activequestion", async(req, res, next) => {
     // next();
 });
 
-express.use("/api/meetingstate", async(req, res, next) => {
-    
+express.use("/api/meetingstate", async (req, res, next) => {
+
     if (req.method === "POST") {
 
         log("POST meeting state called");
@@ -197,7 +197,7 @@ express.use("/api/meetingstate", async(req, res, next) => {
         const response = await setMeetingState(meetingid, active);
         // log(response);
 
-        res.status(200)
+        res.status(200);
         res.send();
 
     } else if (req.method === "GET") {
@@ -209,14 +209,14 @@ express.use("/api/meetingstate", async(req, res, next) => {
 
         const meetingState = await getMeetingState(meetingid as string);
         log(meetingState);
-        res.json({ meetingState: meetingState });
+        res.json({ meetingState: { meetingState } });
 
     }
 
 });
 
-express.use("/api/like", async(req, res, next) => {
-    
+express.use("/api/like", async (req, res, next) => {
+
     if (req.method === "POST") {
 
         log("POST like called");
@@ -230,7 +230,7 @@ express.use("/api/like", async(req, res, next) => {
         const response = await toggleLike(questionId, userID);
         // log(response);
 
-        res.status(200)
+        res.status(200);
         res.send();
 
     } else if (req.method === "GET") {
@@ -239,13 +239,13 @@ express.use("/api/like", async(req, res, next) => {
 
         const questionId = req.query.questionId as string;
         const userID = req.query.userID as string;
-        
+
         log(questionId);
         log(userID);
 
         const like = await getLike(questionId, userID);
         log(like);
-        res.json({ like: like });
+        res.json({ like: { like } });
 
     }
 
@@ -381,11 +381,11 @@ const sendBubbleMessage = async (token, chatid, meetingBubbleTitle, question, au
         type: "message",
         attachments: [
             {
-                "contentType": "application/vnd.microsoft.card.hero",
-                "content": {
-                    "title": "QnA",
-                    "subtitle": author,
-                    "text": `"${question}"`,
+                contentType: "application/vnd.microsoft.card.hero",
+                content: {
+                    title: "QnA",
+                    subtitle: author,
+                    text: `"${question}"`,
                 }
             }
         ],

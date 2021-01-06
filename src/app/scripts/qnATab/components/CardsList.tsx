@@ -1,13 +1,13 @@
 import * as React from "react";
-import { Avatar, Button, Card, Flex, Loader, Text } from '@fluentui/react-northstar';
+import { Avatar, Button, Card, Flex, Loader, Text } from "@fluentui/react-northstar";
 import { FC, useEffect } from "react";
 import TextExampleShorthand from "./Text";
 
-type CardsListProps = {
-    questions: listItem[];
+interface ICardsListProps {
+    questions: IListItem[];
 }
 
-interface listItem {
+interface IListItem {
     key: string;
     content: string;
     header?: string;
@@ -15,18 +15,10 @@ interface listItem {
     Timestamp?: string;
 }
 
-const CardsList: FC<CardsListProps> = ({ questions }) => {
-
-    // const logQuestions = () => {
-    //     console.log(questions);
-    // }
-
-    // const cards = questions.map((listitem) => 
-    //     <li>{listitem.content}</li>
-    // );
+const CardsList: FC<ICardsListProps> = ({ questions }) => {
 
 
-    const cards = questions.map((listitem: listItem) => 
+    const cards = questions.map((listitem: IListItem) =>
         <Flex column gap="gap.medium">
         <Card fluid key={listitem.key}>
             <Card.Header>
@@ -52,65 +44,11 @@ const CardsList: FC<CardsListProps> = ({ questions }) => {
         </Flex>
     );
 
-    return(
-    <>
-    {cards}
-    {/* <ul>{cards}</ul> */}
-            {/* <Flex column gap="gap.small">
-                <Card fluid>
-                    <Card.Header>
-                        <Flex gap="gap.small">
-                            <Avatar name="20"/>
-                            <Flex column>
-                                <TextExampleShorthand content="{listitem.header!}"/>
-                                <TextExampleShorthand content="20/20/2020"/>
-                            </Flex>
-                        </Flex>
-                    </Card.Header>
-                    <Card.Body>
-                        <Flex column gap="gap.small">
-                            <TextExampleShorthand content="{listitem.content}"/>
-                        </Flex>
-                    </Card.Body>
-                    <Card.Footer>
-                        <Flex space="between">
-                            <Button onClick={logQuestions} content="Promote" />
-                        </Flex>
-                    </Card.Footer>
-                </Card>
-                </Flex>
-                <Flex column gap="gap.small">
-                <Card fluid>
-                    <Card.Header>
-                        <Flex gap="gap.small">
-                            <Avatar name="20"/>
-                            <Flex column>
-                                <TextExampleShorthand content="{listitem.header!}"/>
-                                <TextExampleShorthand content="20/20/2020"/>
-                            </Flex>
-                        </Flex>
-                    </Card.Header>
-                    <Card.Body>
-                        <Flex column gap="gap.small">
-                            <TextExampleShorthand content="{listitem.content}"/>
-                        </Flex>
-                    </Card.Body>
-                    <Card.Footer>
-                        <Flex space="between">
-                            <Button onClick={() => console.log("cliekd")} content="Promote" />
-                        </Flex>
-                    </Card.Footer>
-                </Card>
-                </Flex> */}
-                </>
-            )
-
-//     return (
-//         <Flex column gap="gap.small">
-//             {cards}
-//         </Flex>
-//     )
-// }
-}
+    return (
+        <>
+        {cards}
+        </>
+    );
+};
 
 export default CardsList;

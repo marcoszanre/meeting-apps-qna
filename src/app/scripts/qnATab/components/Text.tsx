@@ -1,13 +1,13 @@
 import * as React from "react";
-import { Text } from '@fluentui/react-northstar';
+import { Text } from "@fluentui/react-northstar";
 import { FC } from "react";
 
-type TextExampleShorthandProps = {
+interface ITextExampleShorthandProps {
     content: string;
 }
 
-const TextExampleShorthand: FC<TextExampleShorthandProps> = ({ content }) => (
+const TextExampleShorthand: FC<ITextExampleShorthandProps> = ({ content }) => (
   <Text content={content} />
-)
+);
 
 export default TextExampleShorthand;

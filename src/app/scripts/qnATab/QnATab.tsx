@@ -27,7 +27,7 @@ export const QnATab = () => {
 
             microsoftTeams.authentication.getAuthToken({
                 successCallback: (token: string) => {
-                    console.log(token);
+                    // console.log(token);
                     const decoded: { [key: string]: any; } = jwt_decode(token) as { [key: string]: any; };
                     setName(decoded!.name);
                     // microsoftTeams.appInitialization.notifySuccess();
@@ -49,7 +49,7 @@ export const QnATab = () => {
     useEffect(() => {
         if (context) {
             setEntityId(context.entityId);
-            console.log(context);
+            // console.log(context);
         }
     }, [context]);
 
@@ -63,24 +63,24 @@ export const QnATab = () => {
     }, [name]);
 
     const createMeetingState = async () => {
-        
+
         const fetchUrl: string = `/api/meetingstate?meetingid=${context?.meetingId!}`;
         const meetingStateResponse = await (await fetch(fetchUrl)).json();
-        console.log("meeting state is " + meetingStateResponse.meetingState);
-        console.log(meetingStateResponse);
+        // console.log("meeting state is " + meetingStateResponse.meetingState);
+        // console.log(meetingStateResponse);
 
         if (meetingStateResponse.meetingState === "not found") {
 
             setIsMeetingStateActive(true);
-            
+
             const meetingData = {
                 meetingid: context?.meetingId as string,
                 active: true as boolean,
             };
-    
+
             const body = JSON.stringify(meetingData);
-            // // console.log(body);
-    
+            // console.log(body);
+
             const res = await fetch("/api/meetingstate", {
                 method: "POST",
                 headers: {
@@ -89,17 +89,17 @@ export const QnATab = () => {
                 body: body
             });
 
-            console.log(res.status);
+            // console.log(res.status);
 
             // console.log("no meeting state found");
-    
+
         } else {
 
             setIsMeetingStateActive(meetingStateResponse.meetingState);
-            console.log("meeting state is " + meetingStateResponse.meetingState);
+            // console.log("meeting state is " + meetingStateResponse.meetingState);
         }
-        
-    }
+
+    };
 
     // useEffect(() => {
     //     if (userRole) {
@@ -114,19 +114,8 @@ export const QnATab = () => {
         // console.log(json);
         setUserRole(json.role);
         microsoftTeams.appInitialization.notifySuccess();
-    }
+    };
 
-    // const loadUI = () => {
-    //     if (userRole === "Organizer") {
-    //         // load organizer UI
-    //         console.log("You're an organizer");
-    //     } else {
-    //         // load user UI
-    //         console.log("You're an attendee or presenter");
-    //     }
-    // }
-
-    
     return (
         <Provider theme={theme}>
 

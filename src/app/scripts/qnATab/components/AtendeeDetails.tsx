@@ -5,21 +5,21 @@ import { Flex, Header, RetryIcon, Card, Avatar, Button, StarIcon, Loader, LikeIc
 import { Question } from "../../../services/tableService";
 import TextExampleShorthand from "./Text";
 
-type AtendeeDetailsProps = {
-    context: Context,
-    name: string,
+interface IAtendeeDetailsProps {
+    context: Context;
+    name: string;
 }
 
-const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
+const AtendeeDetails: FC<IAtendeeDetailsProps> = ({ context, name }) => {
 
-    const [promotedQuestions, setPromotedQuestions] = useState<listItem[]>();
+    const [promotedQuestions, setPromotedQuestions] = useState<IListItem[]>();
     const [hasNotReacted, setHasNotReacted] = useState<boolean>(true);
     const [reactionCount, setReactionCount] = useState<number>(10);
     const [log, setLog] = useState<string>("");
 
 
 
-    interface listItem {
+    interface IListItem {
         key: string;
         content: string;
         header?: string;
@@ -28,7 +28,7 @@ const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
         likedBy: number;
     }
 
-    let promotedListItems: listItem[] = promotedQuestions as listItem[];
+    let promotedListItems: IListItem[] = promotedQuestions as IListItem[];
 
     React.useEffect(() => {
         updateQuestions();
@@ -36,50 +36,50 @@ const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
 
     const updateQuestions = async () => {
 
-        let listItems: listItem[] = [];
-            loadQuestions().then((result: Question[]) => {
-                for (let index = 0; index < result.length; index++) {
-                    
-                    const listItem: listItem = {
-                        content: result[index].question,
-                        key: result[index].RowKey,
-                        header: result[index].author,
-                        promoted: result[index].promoted,
-                        Timestamp: result[index].Timestamp,
-                        likedBy: result[index].likedBy!
-                    }
+        const listItems: IListItem[] = [];
+        loadQuestions().then((result: Question[]) => {
+        for (let index = 0; index < result.length; index++) {
 
-                    listItems.push(listItem);
-                }
+            const listItem: IListItem = {
+                content: result[index].question,
+                key: result[index].RowKey,
+                header: result[index].author,
+                promoted: result[index].promoted,
+                Timestamp: result[index].Timestamp,
+                likedBy: result[index].likedBy!
+            };
 
-                promotedListItems = listItems.filter(item => item.promoted === true);
-                setPromotedQuestions(promotedListItems);
-                // console.log(promotedListItems);
+            listItems.push(listItem);
+        }
 
-            });
-    }
+        promotedListItems = listItems.filter(item => item.promoted === true);
+        setPromotedQuestions(promotedListItems);
+        // console.log(promotedListItems);
+
+        });
+    };
 
 
     const loadQuestions = async () => {
         const myMeetingId: string = context?.meetingId as string;
         const fetchUrl: string = `/api/question?meetingId=${myMeetingId}&author=all`;
-        const questionsList = await fetch(fetchUrl); 
+        const questionsList = await fetch(fetchUrl);
         return questionsList.json();
     };
 
 
-    const handleReactionClick = async (listitem: listItem) => {
+    const handleReactionClick = async (listitem: IListItem) => {
 
         const key = listitem.key as string;
         const userId = context.userObjectId as string;
         // alert(key);
         // alert(userId);
-        
+
         const fetchUrl: string = `/api/like?questionId=${key}&userID=${userId}`;
         const likeResponse = await (await fetch(fetchUrl)).json();
         // console.log("meeting state is " + meetingStateResponse.meetingState);
         // console.log(meetingStateResponse);
-       
+
         const likeData = {
             questionId: listitem.key,
             userID: context.userObjectId,
@@ -101,10 +101,10 @@ const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
         !likeResponse.like ? listitem.likedBy! += 1 : listitem.likedBy! -= 1;
 
         setPromotedQuestions(
-            promotedQuestions!.map(item => 
-                item.key === listitem.key 
-                ? {...item, likedBy : listitem.likedBy!} 
-                : item 
+            promotedQuestions!.map(item =>
+                item.key === listitem.key
+                ? {...item, likedBy : listitem.likedBy!}
+                : item
         ));
 
         // setHasNotReacted(!hasNotReacted);
@@ -138,8 +138,8 @@ const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
         <TextExampleShorthand content={log}/>
 
 
-        {promotedQuestions ? promotedQuestions.map((listitem: listItem) => 
-            
+        {promotedQuestions ? promotedQuestions.map((listitem: IListItem) =>
+
             <Flex column gap="gap.medium">
             <Card fluid key={listitem.key}>
                 <Card.Header>
@@ -165,11 +165,11 @@ const AtendeeDetails: FC<AtendeeDetailsProps> = ({ context, name }) => {
             </Flex>
             )
             : <Loader label="Loading promoted questions" />}
-        
+
         </Flex>
 
         </>
-  )
+  );
 
 };
 
