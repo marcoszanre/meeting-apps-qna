@@ -209,7 +209,7 @@ express.use("/api/meetingstate", async (req, res, next) => {
 
         const meetingState = await getMeetingState(meetingid as string);
         log(meetingState);
-        res.json({ meetingState: { meetingState } });
+        res.json({ meetingState: meetingState });
 
     }
 
@@ -245,7 +245,7 @@ express.use("/api/like", async (req, res, next) => {
 
         const like = await getLike(questionId, userID);
         log(like);
-        res.json({ like: { like } });
+        res.json({ like: like });
 
     }
 
