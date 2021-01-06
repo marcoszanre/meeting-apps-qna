@@ -1,4 +1,8 @@
 {
     "appService.defaultWebAppToDeploy": "/subscriptions/9c2c5b26-4383-4b9b-b3f0-8be95f4a93b3/resourceGroups/rg-meetingapps/providers/Microsoft.Web/sites/teamsmeetingappbr",
-    "appService.deploySubpath": "."
+    "appService.deploySubpath": ".",
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ]
 }
