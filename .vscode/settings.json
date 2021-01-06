@@ -3,5 +3,6 @@
     "appService.zipIgnorePattern": [
         "node_modules{,/**}",
         ".vscode{,/**}"
-    ]
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/9c2c5b26-4383-4b9b-b3f0-8be95f4a93b3/resourceGroups/rg-meetingappLinux/providers/Microsoft.Web/sites/teamsmeetingappbrlinux"
 }
