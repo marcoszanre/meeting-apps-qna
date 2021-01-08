@@ -49,7 +49,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
         // loadQuestions();
         updateQuestions();
         // loadMeetingState();
-        !isDefaultMeetingActive && initializePowerBI();
+        (!isDefaultMeetingActive && allQuestions?.length! > 0) && initializePowerBI();
     }, []);
 
     const initializePowerBI = async () => {
@@ -180,7 +180,8 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
 
         isMeetingStateActive && await loadPowerBIAccessToken();
         setIsMeetingStateActive(state);
-        !state && updatePowerBIReactClass();
+        // !state && updatePowerBIReactClass();
+        (!state && allQuestions?.length! > 0) && updatePowerBIReactClass();
 
     };
 
