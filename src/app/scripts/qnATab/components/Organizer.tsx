@@ -47,16 +47,10 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
 
     useEffect(() => {
         // loadQuestions();
-        // updateQuestions();
-        initializeQuestions();
+        updateQuestions();
         // loadMeetingState();
-        (!isDefaultMeetingActive && allQuestions?.length! > 0) && initializePowerBI();
+        !isDefaultMeetingActive && initializePowerBI();
     }, []);
-
-    const initializePowerBI = async () => {
-        updatePowerBIReactClass();
-        await loadPowerBIAccessToken();
-    }
 
     const initializeQuestions = async () => {
         await updateQuestions();
