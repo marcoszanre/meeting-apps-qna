@@ -49,13 +49,16 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
         // loadQuestions();
         updateQuestions();
         // loadMeetingState();
-        // !isDefaultMeetingActive && initializePowerBI();
+        !isDefaultMeetingActive && initializePowerBI();
     }, []);
 
     const initializePowerBI = async () => {
+        await delay(5000);
         updatePowerBIReactClass();
         await loadPowerBIAccessToken();
     }
+
+    const delay = ms => new Promise(res => setTimeout(res, ms));
 
     const listItems: IListItem[] = allQuestions as IListItem[];
     let promotedListItems: IListItem[] = promotedQuestions as IListItem[];
@@ -280,7 +283,13 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
 
     const downloadQuestions = () => {
         if (!isMeetingStateActive && allQuestions?.length! > 0) {
-            alert("let's download some data!");
+            // alert("let's download some data!");
+            const arrayContent = allQuestions;
+            const csvContent = arrayContent!.join("\n");
+            const link = window.document.createElement("a");
+            link.setAttribute("href", "data:text/csv;charset=utf-8,%EF%BB%BF" + encodeURI(csvContent));
+            link.setAttribute("download", "questions_data.csv");
+            link.click();
         }
     };
 
@@ -353,7 +362,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                 }
         />
         <DownloadIcon aria-label="Download Questions"
-            disabled={isMeetingStateActive}
+            disabled={allQuestions?.length! > 0}
             onClick={downloadQuestions} styles={{
                     position: "absolute",
                     right: "0",
