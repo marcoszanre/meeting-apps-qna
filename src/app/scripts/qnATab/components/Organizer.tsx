@@ -284,7 +284,19 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
     const downloadQuestions = () => {
         if (!isMeetingStateActive && allQuestions?.length! > 0) {
             // alert("let's download some data!");
-            const arrayContent = allQuestions;
+            let arrayContent: Array<any> = [];
+            for (let index = 0; index < allQuestions!.length; index++) {
+
+                const listItem = {
+                    content: allQuestions![index].content as string,
+                    key: allQuestions![index].key as string,
+                    header: allQuestions![index].header as string,
+                    promoted: allQuestions![index].promoted! as unknown as string
+                };
+
+                arrayContent.push(listItem);
+            }
+            
             const csvContent = arrayContent!.join("\n");
             const link = window.document.createElement("a");
             link.setAttribute("href", "data:text/csv;charset=utf-8,%EF%BB%BF" + encodeURI(csvContent));
@@ -384,7 +396,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                     settings: {
                         filterPaneEnabled: false,
                         navContentPaneEnabled: false,
-                        persistentFiltersEnabled: false,
+                        persistentFiltersEnabled: false
                     },
                     embedUrl: "https://app.powerbi.com/reportEmbed?reportId=5e67a94d-02e4-45d5-a6a2-25e5c39b43f3&groupId=01855087-cf91-4f29-90f0-04b595b49cdf&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly9XQUJJLVVTLUNFTlRSQUwtQS1QUklNQVJZLXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0IiwiZW1iZWRGZWF0dXJlcyI6eyJtb2Rlcm5FbWJlZCI6dHJ1ZX19",
                     accessToken: accessToken,    // Keep as empty string, null or undefined
