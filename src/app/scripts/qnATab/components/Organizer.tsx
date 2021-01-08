@@ -52,8 +52,9 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
         !isDefaultMeetingActive && initializePowerBI();
     }, []);
 
-    const initializeQuestions = async () => {
-        await updateQuestions();
+    const initializePowerBI = async () => {
+        updatePowerBIReactClass();
+        await loadPowerBIAccessToken();
     }
 
     const listItems: IListItem[] = allQuestions as IListItem[];
