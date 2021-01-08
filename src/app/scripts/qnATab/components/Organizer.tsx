@@ -275,6 +275,18 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
         setPromotedItemsSearchFilter(event.target.value);
     };
 
+    const basicFilter: models.IBasicFilter = {
+        $schema: "http://powerbi.com/product/schema#basic",
+        target: {
+          table: "questionsTable",
+          column: "meetingid"
+        },
+        operator: "In",
+        values: [context.meetingId!],
+        filterType: 1, // pbi.models.FilterType.BasicFilter
+        requireSingleSelection: true // Limits selection of values to one.
+    }
+
     return (
         <>
         <Flex column padding="padding.medium">
@@ -334,7 +346,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
 
     </Flex>
 
-    { !isMeetingStateActive && <Flex styles={{ height: "25rem" }} column padding="padding.medium">
+    { (!isMeetingStateActive && allQuestions?.length! > 0) && <Flex styles={{ height: "25rem" }} column padding="padding.medium">
             <>
             <PowerBIEmbed cssClassName="powerBIClass"
                 embedConfig = {{
@@ -345,11 +357,12 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                         navContentPaneEnabled: false,
                         persistentFiltersEnabled: false,
                     },
-                    embedUrl: `https://app.powerbi.com/reportEmbed?reportId=5e67a94d-02e4-45d5-a6a2-25e5c39b43f3&groupId=01855087-cf91-4f29-90f0-04b595b49cdf&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly9XQUJJLVVTLUNFTlRSQUwtQS1QUklNQVJZLXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0IiwiZW1iZWRGZWF0dXJlcyI6eyJtb2Rlcm5FbWJlZCI6dHJ1ZX19?filter=questionsTable/meetingid eq '${context.meetingId!}'`,
+                    embedUrl: "https://app.powerbi.com/reportEmbed?reportId=5e67a94d-02e4-45d5-a6a2-25e5c39b43f3&groupId=01855087-cf91-4f29-90f0-04b595b49cdf&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly9XQUJJLVVTLUNFTlRSQUwtQS1QUklNQVJZLXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0IiwiZW1iZWRGZWF0dXJlcyI6eyJtb2Rlcm5FbWJlZCI6dHJ1ZX19",
                     accessToken: accessToken,    // Keep as empty string, null or undefined
                     // accessToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVPZjlQNUY5Z0NDd0NtRjJCT0hIeEREUS1EayIsImtpZCI6IjVPZjlQNUY5Z0NDd0NtRjJCT0hIeEREUS1EayJ9.eyJhdWQiOiJodHRwczovL2FuYWx5c2lzLndpbmRvd3MubmV0L3Bvd2VyYmkvYXBpIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvMjk2OTU2YWEtOWNmNC00MmQ5LTgwZjUtNGM0ZTRmOGM0ZmYxLyIsImlhdCI6MTYxMDAzOTQ1MiwibmJmIjoxNjEwMDM5NDUyLCJleHAiOjE2MTAwNDMzNTIsImFjY3QiOjAsImFjciI6IjEiLCJhaW8iOiJFMkpnWVBqOWU3dE9rTm9ldzVBK2xqZHQ2a3MzZEJaT3l1R2Zlb1M3aEUva2xEY2Yxd01BIiwiYW1yIjpbInB3ZCJdLCJhcHBpZCI6ImM4NWMxNzM1LTMyZDYtNDAzOC1iY2IzLWI3NWI0NzZmNDlmZSIsImFwcGlkYWNyIjoiMSIsImZhbWlseV9uYW1lIjoiQWRtaW5pc3RyYXRvciIsImdpdmVuX25hbWUiOiJNT0QiLCJpcGFkZHIiOiIxODcuMTAxLjEwNC4xNCIsIm5hbWUiOiJNT0QgQWRtaW5pc3RyYXRvciIsIm9pZCI6IjkzZjZkMGNkLTViZjctNDhkNy1hYzI1LWQ3ODQ5ZjdhMzEwMiIsInB1aWQiOiIxMDAzMjAwMDk0NjQ1MUI1IiwicmgiOiIwLkFBQUFxbFpwS2ZTYzJVS0E5VXhPVDR4UDhUVVhYTWpXTWpoQXZMTzNXMGR2U2Y1WEFFUS4iLCJzY3AiOiJSZXBvcnQuUmVhZC5BbGwiLCJzdWIiOiJlM1RmWE1YR1lSQUwzM1dELTVpcmMteFU2Z3U0Y1JVMG9wcjVnVTVZOU5FIiwidGlkIjoiMjk2OTU2YWEtOWNmNC00MmQ5LTgwZjUtNGM0ZTRmOGM0ZmYxIiwidW5pcXVlX25hbWUiOiJhZG1pbkBNMzY1eDE2NTc1My5vbm1pY3Jvc29mdC5jb20iLCJ1cG4iOiJhZG1pbkBNMzY1eDE2NTc1My5vbm1pY3Jvc29mdC5jb20iLCJ1dGkiOiJTQW0xLTNRcU9VYTB6MkhwTjk4WkFRIiwidmVyIjoiMS4wIiwid2lkcyI6WyJlNmQxYTIzYS1kYTExLTRiZTQtOTU3MC1iZWZjODZkMDY3YTciLCI2MmU5MDM5NC02OWY1LTQyMzctOTE5MC0wMTIxNzcxNDVlMTAiLCJiNzlmYmY0ZC0zZWY5LTQ2ODktODE0My03NmIxOTRlODU1MDkiXX0.Uc0vd_1r_KIV7gyOGhy12nbRlN5yIfdXx8qFDD9brVb3g-IryYv-qUwf8xfRQMHj_gVy9r4VDCT8itV0r2PM3Z5WSUv3t9mp5VRJ3gdbWny1CvK7HE8B7IpfAE5W6p0yGKazEEziP-oZL5g-Rifp2XUEdibC-iE5khXYgbMJO2mvz5_PXtPyjyT-l2s5bi0TADVqTfzO9sLjWCnaBS2Z2YuftvkEDIhQRQMSY19haTEknke6ooSR4lm4q_nPtNdAIHiv4jKBx3Csuk0ZEbO4Niy_ect1QRwrTnM3QxXoqxbQA2xc00LzwvK8uf9VCneM8mRdgbwobYRvQeSHzbVXlA",    // Keep as empty string, null or undefined
                     tokenType: models.TokenType.Aad,
-                    pageName: "Home"
+                    pageName: "Home",
+                    filters: [ basicFilter ]
                 }}
             />
             </>
