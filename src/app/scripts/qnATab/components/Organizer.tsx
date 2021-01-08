@@ -347,7 +347,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
 
     </Flex>
 
-    { (!isMeetingStateActive && allQuestions?.length! > 0) && <Flex styles={{ height: "25rem" }} column padding="padding.medium">
+    { (!isMeetingStateActive && allQuestions?.length! > 0) && <Flex styles={{ height: "28rem" }} column padding="padding.medium">
             <>
             <Segment color="brand" content="This report updates daily every hour from 9AM to 6PM." />
             <PowerBIEmbed cssClassName="powerBIClass"
