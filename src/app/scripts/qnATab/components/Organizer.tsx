@@ -284,16 +284,15 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
     const downloadQuestions = () => {
         if (!isMeetingStateActive && allQuestions?.length! > 0) {
             // alert("let's download some data!");
-            let arrayContent: Array<any> = [];
+            let arrayContent: Array<string> = [];
             for (let index = 0; index < allQuestions!.length; index++) {
 
-                const listItem = {
-                    content: allQuestions![index].content as string,
-                    key: allQuestions![index].key as string,
-                    header: allQuestions![index].header as string,
-                    promoted: allQuestions![index].promoted! as unknown as string
-                };
+                const content = allQuestions![index].content as string;
+                const key =  allQuestions![index].key as string;
+                const header =  allQuestions![index].header as string;
+                const promoted = allQuestions![index].promoted! as unknown as string;
 
+                const listItem = `${content},${key},${header},${promoted}`;
                 arrayContent.push(listItem);
             }
             
