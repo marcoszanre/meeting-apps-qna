@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Provider, Flex, Button, Header, Segment, Alert, TextArea, List, ButtonGroup, Loader, ListProps, Dialog, Input, Table } from "@fluentui/react-northstar";
 import { CloseIcon, EditIcon } from "@fluentui/react-icons-northstar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, createContext } from "react";
 import { useTeams } from "msteams-react-base-component";
 import * as microsoftTeams from "@microsoft/teams-js";
 import jwt_decode from "jwt-decode";
@@ -20,6 +20,7 @@ export const QnATab = () => {
     // const [myQuestions, setMyQuestions] = useState<listItem[]>();
     const [userRole, setUserRole] = useState<string>();
     const [isMeetingStateActive, setIsMeetingStateActive] = useState<boolean>();
+    const [accessToken, setAccessToken] = useState<string>();
 
 
     useEffect(() => {
@@ -28,6 +29,7 @@ export const QnATab = () => {
             microsoftTeams.authentication.getAuthToken({
                 successCallback: (token: string) => {
                     // console.log(token);
+                    setAccessToken(token);
                     const decoded: { [key: string]: any; } = jwt_decode(token) as { [key: string]: any; };
                     setName(decoded!.name);
                     // microsoftTeams.appInitialization.notifySuccess();
@@ -120,7 +122,7 @@ export const QnATab = () => {
         <Provider theme={theme}>
 
             {/* {userRole ? <UIRouter role={userRole} context={context!} name={name!}/> : <Loader label="Loading details" />} */}
-            {userRole && <UIRouter role={userRole} context={context!} name={name!} active={isMeetingStateActive!} />}
+            {userRole && <UIRouter role={userRole} context={context!} name={name!} active={isMeetingStateActive!} accessToken={accessToken!} />}
 
         </Provider>
     );

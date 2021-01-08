@@ -1,5 +1,7 @@
 import { Flex, Header, Segment, Input, Dialog, CloseIcon, Button, Loader, TextArea, List, ListProps, TrashCanIcon, EditIcon, AcceptIcon, EyeIcon, EyeSlashIcon, SearchIcon, RetryIcon, BanIcon, CallRecordingIcon } from "@fluentui/react-northstar";
 import { Context } from "@microsoft/teams-js";
+import { PowerBIEmbed } from "powerbi-client-react";
+import { models, Report, Embed, IEmbedConfiguration, service, Page } from 'powerbi-client';
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { Question } from "../../../services/tableService";
@@ -7,9 +9,11 @@ import { Question } from "../../../services/tableService";
 interface IOrganizerProps {
     context: Context;
     name: string;
+    teamsAccessToken: string;
+    isDefaultMeetingActive: boolean;
 }
 
-export const Organizer: React.FC<IOrganizerProps> = ({ context, name }) => {
+export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAccessToken, isDefaultMeetingActive }) => {
 
     const [question, setQuestion] = useState<string>();
     const [allQuestions, setMyQuestions] = useState<IListItem[]>();
@@ -25,15 +29,13 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name }) => {
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState<boolean>(false);
     const [isCloseMeetingDialogOpen, setIsCloseMeetingDialogOpen] = useState<boolean>(false);
     const [isNotEditingQuestion, setIsNotEditingQuestion] = useState<boolean>(true);
-    const [isMeetingStateActive, setIsMeetingStateActive] = useState<boolean>(true);
+    const [isMeetingStateActive, setIsMeetingStateActive] = useState<boolean>(isDefaultMeetingActive);
     const [dialogContent, setDialogContent] = useState<string>();
     const [editedQuestion, setEditedQuestion] = useState<string>();
     const [isNotAllowedToSubmitQuestion, setIsNotAllowedToSubmitQuestion] = useState<boolean>(true);
     const [promotedItemsSearchFilter, setPromotedItemsSearchFilter] = useState<string>();
     const [notPromotedItemsSearchFilter, setNotPromotedItemsSearchFilter] = useState<string>();
-
-
-
+    const [accessToken, setAccessToken] = useState<string>();
 
 
     interface IListItem {
@@ -46,13 +48,25 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name }) => {
     useEffect(() => {
         // loadQuestions();
         updateQuestions();
-        loadMeetingState();
+        // loadMeetingState();
+        !isDefaultMeetingActive && initializePowerBI();
     }, []);
+
+    const initializePowerBI = async () => {
+        updatePowerBIReactClass();
+        await loadPowerBIAccessToken();
+    }
 
     const listItems: IListItem[] = allQuestions as IListItem[];
     let promotedListItems: IListItem[] = promotedQuestions as IListItem[];
     let notPromotedListItems: IListItem[] = notPromotedQuestions as IListItem[];
 
+    const updatePowerBIReactClass = () => {
+        let elm: HTMLElement;
+        elm = document.querySelector<HTMLElement>(".powerBIClass")!;
+        // console.log(elm);
+        elm!.style.height = "24rem";
+    }
 
     const updateQuestions = async () => {
 
@@ -163,9 +177,22 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name }) => {
 
         // console.log("the meeting has been closed");
         setIsCloseMeetingDialogOpen(false);
+
+        isMeetingStateActive && await loadPowerBIAccessToken();
         setIsMeetingStateActive(state);
+        !state && updatePowerBIReactClass();
 
     };
+
+    const loadPowerBIAccessToken = async () => {
+
+        const fetchUrl: string = `/api/powerbiaccesstoken?token=${teamsAccessToken}`;
+        const accessTokenReponse = await (await fetch(fetchUrl)).json();
+        // console.log(questionUpdateReponse.meetingState);
+        setAccessToken(accessTokenReponse.accessToken);
+        
+    }
+
 
     const loadMeetingState = async () => {
 
@@ -306,6 +333,28 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name }) => {
         />
 
     </Flex>
+
+    { !isMeetingStateActive && <Flex styles={{ height: "25rem" }} column padding="padding.medium">
+            <>
+            <PowerBIEmbed cssClassName="powerBIClass"
+                embedConfig = {{
+                    type: "report",   // Supported types: report, dashboard, tile, visual and qna
+                    id: "5e67a94d-02e4-45d5-a6a2-25e5c39b43f3",
+                    settings: {
+                        filterPaneEnabled: false,
+                        navContentPaneEnabled: false,
+                        persistentFiltersEnabled: false,
+                    },
+                    embedUrl: `https://app.powerbi.com/reportEmbed?reportId=5e67a94d-02e4-45d5-a6a2-25e5c39b43f3&groupId=01855087-cf91-4f29-90f0-04b595b49cdf&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly9XQUJJLVVTLUNFTlRSQUwtQS1QUklNQVJZLXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0IiwiZW1iZWRGZWF0dXJlcyI6eyJtb2Rlcm5FbWJlZCI6dHJ1ZX19?filter=questionsTable/meetingid eq '${context.meetingId!}'`,
+                    accessToken: accessToken,    // Keep as empty string, null or undefined
+                    // accessToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjVPZjlQNUY5Z0NDd0NtRjJCT0hIeEREUS1EayIsImtpZCI6IjVPZjlQNUY5Z0NDd0NtRjJCT0hIeEREUS1EayJ9.eyJhdWQiOiJodHRwczovL2FuYWx5c2lzLndpbmRvd3MubmV0L3Bvd2VyYmkvYXBpIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvMjk2OTU2YWEtOWNmNC00MmQ5LTgwZjUtNGM0ZTRmOGM0ZmYxLyIsImlhdCI6MTYxMDAzOTQ1MiwibmJmIjoxNjEwMDM5NDUyLCJleHAiOjE2MTAwNDMzNTIsImFjY3QiOjAsImFjciI6IjEiLCJhaW8iOiJFMkpnWVBqOWU3dE9rTm9ldzVBK2xqZHQ2a3MzZEJaT3l1R2Zlb1M3aEUva2xEY2Yxd01BIiwiYW1yIjpbInB3ZCJdLCJhcHBpZCI6ImM4NWMxNzM1LTMyZDYtNDAzOC1iY2IzLWI3NWI0NzZmNDlmZSIsImFwcGlkYWNyIjoiMSIsImZhbWlseV9uYW1lIjoiQWRtaW5pc3RyYXRvciIsImdpdmVuX25hbWUiOiJNT0QiLCJpcGFkZHIiOiIxODcuMTAxLjEwNC4xNCIsIm5hbWUiOiJNT0QgQWRtaW5pc3RyYXRvciIsIm9pZCI6IjkzZjZkMGNkLTViZjctNDhkNy1hYzI1LWQ3ODQ5ZjdhMzEwMiIsInB1aWQiOiIxMDAzMjAwMDk0NjQ1MUI1IiwicmgiOiIwLkFBQUFxbFpwS2ZTYzJVS0E5VXhPVDR4UDhUVVhYTWpXTWpoQXZMTzNXMGR2U2Y1WEFFUS4iLCJzY3AiOiJSZXBvcnQuUmVhZC5BbGwiLCJzdWIiOiJlM1RmWE1YR1lSQUwzM1dELTVpcmMteFU2Z3U0Y1JVMG9wcjVnVTVZOU5FIiwidGlkIjoiMjk2OTU2YWEtOWNmNC00MmQ5LTgwZjUtNGM0ZTRmOGM0ZmYxIiwidW5pcXVlX25hbWUiOiJhZG1pbkBNMzY1eDE2NTc1My5vbm1pY3Jvc29mdC5jb20iLCJ1cG4iOiJhZG1pbkBNMzY1eDE2NTc1My5vbm1pY3Jvc29mdC5jb20iLCJ1dGkiOiJTQW0xLTNRcU9VYTB6MkhwTjk4WkFRIiwidmVyIjoiMS4wIiwid2lkcyI6WyJlNmQxYTIzYS1kYTExLTRiZTQtOTU3MC1iZWZjODZkMDY3YTciLCI2MmU5MDM5NC02OWY1LTQyMzctOTE5MC0wMTIxNzcxNDVlMTAiLCJiNzlmYmY0ZC0zZWY5LTQ2ODktODE0My03NmIxOTRlODU1MDkiXX0.Uc0vd_1r_KIV7gyOGhy12nbRlN5yIfdXx8qFDD9brVb3g-IryYv-qUwf8xfRQMHj_gVy9r4VDCT8itV0r2PM3Z5WSUv3t9mp5VRJ3gdbWny1CvK7HE8B7IpfAE5W6p0yGKazEEziP-oZL5g-Rifp2XUEdibC-iE5khXYgbMJO2mvz5_PXtPyjyT-l2s5bi0TADVqTfzO9sLjWCnaBS2Z2YuftvkEDIhQRQMSY19haTEknke6ooSR4lm4q_nPtNdAIHiv4jKBx3Csuk0ZEbO4Niy_ect1QRwrTnM3QxXoqxbQA2xc00LzwvK8uf9VCneM8mRdgbwobYRvQeSHzbVXlA",    // Keep as empty string, null or undefined
+                    tokenType: models.TokenType.Aad,
+                    pageName: "Home"
+                }}
+            />
+            </>
+    </Flex>
+    }
 
     <Flex gap="gap.small" padding="padding.medium">
         <Flex.Item size="size.half">

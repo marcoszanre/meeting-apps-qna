@@ -251,6 +251,24 @@ express.use("/api/like", async (req, res, next) => {
 
 });
 
+express.use("/api/powerbiaccesstoken", async (req, res, next) => {
+
+    if (req.method === "GET") {
+
+        log("Get access token called");
+
+        const token = req.query.token as string;
+
+        log(token);
+
+        const accessToken = await getPowerBIAccessToken();
+        log(accessToken);
+        res.json({ accessToken: accessToken });
+
+    }
+
+});
+
 
 // routing for pages for tabs and connector configuration
 // For more information see: https://www.npmjs.com/package/express-msteams-host
@@ -298,22 +316,6 @@ express.get("/api/role", async (req, res, next) => {
     next();
 });
 
-// Sends the bubble notification
-// express.get("/api/bubble", async (req, res, next) => {
-
-//     // console.log(req.query);
-
-//     const chatId = req.query.chatId;
-//     const meetingBubbleTitle = "Contoso";
-
-//     // const accessToken = await getAuthTokenFromMicrosoft(process.env.MICROSOFT_APP_ID, process.env.MICROSOFT_APP_PASSWORD);
-//     const accessToken = await getAuthTokenFromMicrosoft();
-//     await sendBubbleMessage(accessToken, chatId, meetingBubbleTitle);
-
-//     res.sendStatus(200);
-//     next();
-// });
-
 
 // const getAuthTokenFromMicrosoft = async (appId, appSecret) => {
 const getAuthTokenFromMicrosoft = async () => {
@@ -338,6 +340,44 @@ const getAuthTokenFromMicrosoft = async () => {
     const postBody = formBody.join("&");
 
     const res = await fetch("https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: postBody,
+    });
+    const json = await res.json();
+    if (json.error) { throw new Error(`${json.error}: ${json.error_description}`); }
+    // log(json);
+    return json.access_token;
+};
+
+const getPowerBIAccessToken = async () => {
+
+    const details = {
+        client_id: process.env.MICROSOFT_APP_ID,
+        client_secret: process.env.MICROSOFT_APP_PASSWORD,
+        grant_type: "password",
+        username: process.env.POWER_BI_USER,
+        password: process.env.POWER_BI_PASSWORD,
+        // assertion: token,
+        // requested_token_use: "on_behalf_of",
+        scope: "https://analysis.windows.net/powerbi/api/.default"
+    };
+
+    const formBody: string[] = [];
+
+    for (const property in details) {
+      if (details.hasOwnProperty(property)) {
+        const encodedKey = encodeURIComponent(property);
+        const encodedValue = encodeURIComponent(details[property]);
+        formBody.push(encodedKey + "=" + encodedValue);
+      }
+    }
+
+    const postBody = formBody.join("&");
+
+    const res = await fetch(`https://login.microsoftonline.com/${process.env.TENANT_ID as string}/oauth2/v2.0/token`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",

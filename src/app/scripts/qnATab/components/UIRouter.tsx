@@ -14,9 +14,10 @@ interface IUIRouterProps {
   context: Context;
   name: string;
   active: boolean;
+  accessToken: string;
 }
 
-export const UIRouter: FC<IUIRouterProps> = ({ role, context, name, active }) => {
+export const UIRouter: FC<IUIRouterProps> = ({ role, context, name, active, accessToken }) => {
 
   const frameContext: string = context.frameContext as string;
 
@@ -38,7 +39,7 @@ export const UIRouter: FC<IUIRouterProps> = ({ role, context, name, active }) =>
       // app is being loaded before/after meeting
       // console.log("app being loaded as Content");
       return (
-        <Organizer context={context} name={name} />
+        <Organizer context={context} name={name} teamsAccessToken={accessToken} isDefaultMeetingActive={active} />
       );
     } else {
       // app is being loaded inside the meeting as details
