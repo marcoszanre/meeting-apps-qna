@@ -362,7 +362,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                 }
         />
         <DownloadIcon title="Download Questions"
-            disabled={allQuestions?.length! > 0}
+            disabled={allQuestions?.length! < 1}
             onClick={downloadQuestions} styles={{
                     position: "absolute",
                     right: "0",
