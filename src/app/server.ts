@@ -5,7 +5,7 @@ import * as morgan from "morgan";
 import { MsTeamsApiRouter, MsTeamsPageRouter } from "express-msteams-host";
 import * as debug from "debug";
 import * as compression from "compression";
-import { initTableSvc, insertQuestion, getQuestions, deleteQuestion, tableSvcUpdateQuestion, getAllQuestions, tableSvcPromoteDemoteQuestion, setActiveQuestion, getActiveQuestion, setMeetingState, getMeetingState, toggleLike, getLike } from "./services/tableService";
+import { initTableSvc, insertQuestion, getQuestions, deleteQuestion, tableSvcUpdateQuestion, getAllQuestions, tableSvcPromoteDemoteQuestion, setActiveQuestion, getActiveQuestion, setMeetingState, getMeetingState, toggleLike, getLike, tableSvcSetAskedQuestion } from "./services/tableService";
 
 
 
@@ -264,6 +264,26 @@ express.use("/api/powerbiaccesstoken", async (req, res, next) => {
         const accessToken = await getPowerBIAccessToken();
         log(accessToken);
         res.json({ accessToken: accessToken });
+
+    }
+
+});
+
+express.use("/api/askedquestion", async (req, res, next) => {
+
+    if (req.method === "GET") {
+
+        log("Get askedquestion called");
+
+        const rowkey = req.query.rowkey as string;
+
+        // log(token);
+
+        const setAskedQuestion = await tableSvcSetAskedQuestion(rowkey);
+        log(setAskedQuestion);
+
+        res.status(200);
+        res.send();
 
     }
 

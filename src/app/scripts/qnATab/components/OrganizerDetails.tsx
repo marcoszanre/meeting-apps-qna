@@ -109,13 +109,10 @@ export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) 
 
 
         // UPDATED ASKED QUESTIONS
-        // const key = listitem.key as string;
-        // const asked = true;
 
-        // // to do add date format
-        // const askedWhen = Date.now().toLocaleString();
+        const rowkey = listitem.key as string;
 
-        // const fetchUrl: string = `/api/like?questionId=${key}&userID=${userId}`;
+        const fetchUrl: string = `/api/askedquestion?rowkey=${rowkey}`;
         // const likeResponse = await (await fetch(fetchUrl)).json();
         // // console.log("meeting state is " + meetingStateResponse.meetingState);
         // // console.log(meetingStateResponse);

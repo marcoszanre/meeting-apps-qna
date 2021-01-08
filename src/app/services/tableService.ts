@@ -474,6 +474,29 @@ const toggleLike = async (questionId: string, userID: string) => {
         await updateLikeAggregate(questionId);
 };
 
+const tableSvcSetAskedQuestion = (rowkey: string) => {
+
+    return new Promise((resolve, reject) => { 
+        const questionReference = {
+            PartitionKey: {_: "questionsPartition"},
+            RowKey: {_: rowkey},
+            asked: {_: true},
+            askedWhen: {_: Date.now().toString()}
+        };
+
+        tableSvc.mergeEntity("questionsTable", questionReference, (error, result, response) => {
+            if (!error) {
+              // Entity inserted
+              log("success!");
+              resolve("OK");
+            } else {
+              log(error);
+              reject("Error");
+            }
+        });
+    });
+};
+
 interface Question {
     meetingId: string;
     author: string;
@@ -501,5 +524,6 @@ export {
     setMeetingState,
     getMeetingState,
     getLike,
-    toggleLike
+    toggleLike,
+    tableSvcSetAskedQuestion
 }
