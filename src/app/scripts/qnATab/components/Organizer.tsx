@@ -320,7 +320,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                 paddingLeft: "1.250rem"
                 // paddingBottom: "0.625rem"
         }}/>
-        <RetryIcon aria-label="Refresh Questions"
+        <RetryIcon title="Refresh Questions"
             onClick={updateQuestions} styles={{
                     position: "absolute",
                     right: "0",
@@ -351,7 +351,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                             marginRight: "3.625rem",
                             top: "0",
                             cursor: "pointer"
-                    }} /> : <CallRecordingIcon aria-label="Open Meeting" styles={{
+                    }} /> : <CallRecordingIcon title="Open Meeting" styles={{
                         position: "absolute",
                         right: "0",
                         marginTop: "1.625rem",
@@ -361,7 +361,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                 }} />
                 }
         />
-        <DownloadIcon aria-label="Download Questions"
+        <DownloadIcon title="Download Questions"
             disabled={allQuestions?.length! > 0}
             onClick={downloadQuestions} styles={{
                     position: "absolute",
