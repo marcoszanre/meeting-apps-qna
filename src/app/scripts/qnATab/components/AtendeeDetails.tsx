@@ -126,7 +126,7 @@ const AtendeeDetails: FC<IAtendeeDetailsProps> = ({ context, name }) => {
                 paddingBottom: "0.625rem"
         }}/>
 
-        <RetryIcon onClick={updateQuestions} styles={{
+        <RetryIcon title="Refresh Questions" onClick={updateQuestions} styles={{
                     position: "absolute",
                     right: "0",
                     marginTop: "2.250rem",

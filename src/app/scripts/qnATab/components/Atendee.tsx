@@ -205,7 +205,7 @@ export const Atendee: React.FC<IOrganizerProps> = ({ context, name }) => {
                 paddingLeft: "1.250rem"
                 // paddingBottom: "0.625rem"
         }}/>
-        <RetryIcon onClick={updateQuestions} styles={{
+        <RetryIcon title="Refresh Questions" onClick={updateQuestions} styles={{
                     position: "absolute",
                     right: "0",
                     marginTop: "1.625rem",
