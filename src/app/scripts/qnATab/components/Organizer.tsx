@@ -47,7 +47,8 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
 
     useEffect(() => {
         // loadQuestions();
-        updateQuestions();
+        // updateQuestions();
+        initializeQuestions();
         // loadMeetingState();
         (!isDefaultMeetingActive && allQuestions?.length! > 0) && initializePowerBI();
     }, []);
@@ -55,6 +56,10 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
     const initializePowerBI = async () => {
         updatePowerBIReactClass();
         await loadPowerBIAccessToken();
+    }
+
+    const initializeQuestions = async () => {
+        await updateQuestions();
     }
 
     const listItems: IListItem[] = allQuestions as IListItem[];
