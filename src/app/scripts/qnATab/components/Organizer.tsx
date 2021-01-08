@@ -1,4 +1,4 @@
-import { Flex, Header, Segment, Input, Dialog, CloseIcon, Button, Loader, TextArea, List, ListProps, TrashCanIcon, EditIcon, AcceptIcon, EyeIcon, EyeSlashIcon, SearchIcon, RetryIcon, BanIcon, CallRecordingIcon } from "@fluentui/react-northstar";
+import { Flex, Header, Segment, Input, Dialog, CloseIcon, Button, Loader, TextArea, List, ListProps, TrashCanIcon, EditIcon, AcceptIcon, EyeIcon, EyeSlashIcon, SearchIcon, RetryIcon, BanIcon, CallRecordingIcon, DownloadIcon } from "@fluentui/react-northstar";
 import { Context } from "@microsoft/teams-js";
 import { PowerBIEmbed } from "powerbi-client-react";
 import { models, Report, Embed, IEmbedConfiguration, service, Page } from 'powerbi-client';
@@ -49,7 +49,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
         // loadQuestions();
         updateQuestions();
         // loadMeetingState();
-        !isDefaultMeetingActive && initializePowerBI();
+        // !isDefaultMeetingActive && initializePowerBI();
     }, []);
 
     const initializePowerBI = async () => {
@@ -94,6 +94,8 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
             setNotPromotedQuestions(notPromotedListItems);
             // console.log(notPromotedListItems);
         });
+
+        !isDefaultMeetingActive && initializePowerBI();
     };
 
     const remoteQuestionFromArray = async () => {
@@ -276,6 +278,12 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
         setPromotedItemsSearchFilter(event.target.value);
     };
 
+    const downloadQuestions = () => {
+        if (!isMeetingStateActive && allQuestions?.length! > 0) {
+            alert("let's download some data!");
+        }
+    };
+
     const basicFilter: models.IBasicFilter = {
         $schema: "http://powerbi.com/product/schema#basic",
         target: {
@@ -344,6 +352,16 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                 }} />
                 }
         />
+        <DownloadIcon aria-label="Download Questions"
+            disabled={isMeetingStateActive}
+            onClick={downloadQuestions} styles={{
+                    position: "absolute",
+                    right: "0",
+                    marginTop: "1.625rem",
+                    marginRight: "5.625rem",
+                    top: "0",
+                    cursor: "pointer"
+        }}/>
 
     </Flex>
 
