@@ -284,7 +284,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
     const downloadQuestions = () => {
         if (!isMeetingStateActive && allQuestions?.length! > 0) {
             // alert("let's download some data!");
-            let arrayContent: Array<string> = [];
+            let arrayContent: Array<string> = ["content;key;header;promoted"];
             for (let index = 0; index < allQuestions!.length; index++) {
 
                 const content = allQuestions![index].content as string;

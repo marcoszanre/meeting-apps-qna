@@ -35,7 +35,9 @@ const insertQuestion = (meetingid: string, author: string, question: string) => 
             author: {_: author},
             question: {_: question},
             promoted: {_: false},
-            likedBy: {_: 0}
+            likedBy: {_: 0},
+            asked: {_: false},
+            askedWhen: {_: ""}
         };
 
         tableSvc.insertEntity("questionsTable", questionReference, (error, result, response) => {
@@ -480,6 +482,8 @@ interface Question {
     promoted?: boolean;
     Timestamp?: string;
     likedBy?: number;
+    asked?: boolean;
+    askedWhen?: string;
 }
 
 
