@@ -292,7 +292,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                 const header =  allQuestions![index].header as string;
                 const promoted = allQuestions![index].promoted! as unknown as string;
 
-                const listItem = `${content},${key},${header},${promoted}`;
+                const listItem = `${content};${key};${header};${promoted}`;
                 arrayContent.push(listItem);
             }
             
