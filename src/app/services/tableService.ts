@@ -277,7 +277,7 @@ const setMeetingState = (rowkey: string, active: boolean) => {
         const isThereAlreadyAMeetingState = await getMeetingState(rowkey);
         if (isThereAlreadyAMeetingState === "not found") {
             // no active meeting state, create one
-            tableSvc.insertEntity("questionsTable", meetingReference, (error, result, response) => {
+            tableSvc.insertEntity("meetingsTable", meetingReference, (error, result, response) => {
                 if (!error) {
                   // Entity inserted
                   log("success!");
@@ -289,7 +289,7 @@ const setMeetingState = (rowkey: string, active: boolean) => {
             });
         } else {
             // merge question reference as active question
-            tableSvc.mergeEntity("questionsTable", meetingReference, (error, result, response) => {
+            tableSvc.mergeEntity("meetingsTable", meetingReference, (error, result, response) => {
                 if (!error) {
                   // Entity inserted
                   log("success!");
@@ -308,7 +308,7 @@ const getMeetingState = async (rowkey: string) => {
 
     return new Promise((resolve, reject) => {
 
-        tableSvc.retrieveEntity("questionsTable", "meetingStatePartition", rowkey, (error, result, response) => {
+        tableSvc.retrieveEntity("meetingsTable", "meetingStatePartition", rowkey, (error, result, response) => {
             if (!error) {
                 // result contains the entity
                 const meetingState = {
