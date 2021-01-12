@@ -23,7 +23,7 @@ export const QnATabRemove = () => {
                 <Flex.Item>
                     <div>
                         <Header content="You're about to remove your tab..." />
-                        <Text content="You can just add stuff here if you want to clean up when removing the tab. For instance, if you have stored data in an external repository, you can delete or archive it here. If you don't need this remove page you can remove it." />
+                        <Text content="Thanks for using QnA!" />
                     </div>
                 </Flex.Item>
             </Flex>
