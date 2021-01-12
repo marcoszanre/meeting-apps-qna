@@ -287,7 +287,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
     };
 
     const downloadQuestions = () => {
-        if (!isMeetingStateActive && allQuestions?.length! > 0) {
+        if (allQuestions?.length! > 0) {
             // alert("let's download some data!");
             let arrayContent: Array<string> = ["content;key;header;promoted;asked;askedwhen"];
             for (let index = 0; index < allQuestions!.length; index++) {
@@ -297,7 +297,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                 const header =  allQuestions![index].header as string;
                 const promoted = allQuestions![index].promoted! as unknown as string;
                 const asked = allQuestions![index].asked! as unknown as string;
-                const askedwhen = allQuestions![index].askedWhen! as unknown as string;
+                const askedwhen = allQuestions![index].askedWhen! as string;
 
                 const listItem = `${content};${key};${header};${promoted};${asked};${askedwhen}`;
                 arrayContent.push(listItem);
