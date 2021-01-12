@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, CardBody, CardHeader, DownloadIcon, EyeSlashIcon, Flex, Header, Loader, MoreIcon, RetryIcon, StarIcon } from "@fluentui/react-northstar";
+import { Avatar, Button, Card, CardBody, CardHeader, DownloadIcon, EyeIcon, EyeSlashIcon, Flex, Header, Loader, MoreIcon, RetryIcon, StarIcon } from "@fluentui/react-northstar";
 import { Context } from "@microsoft/teams-js";
 import * as React from "react";
 import { FC, useEffect, useState } from "react";
@@ -112,37 +112,36 @@ export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) 
 
         const rowkey = listitem.key as string;
 
-        const fetchUrl: string = `/api/askedquestion?rowkey=${rowkey}`;
-        // const likeResponse = await (await fetch(fetchUrl)).json();
-        // // console.log("meeting state is " + meetingStateResponse.meetingState);
-        // // console.log(meetingStateResponse);
+        // const fetchUrl: string = `/api/askedquestion?rowkey=${rowkey}`;
+        // const askedResponse = await (await fetch(fetchUrl)).json();
+        // console.log("meeting state is " + meetingStateResponse.meetingState);
+        // console.log(meetingStateResponse);
 
-        // const likeData = {
-        //     questionId: listitem.key,
-        //     userID: context.userObjectId,
-        // };
+        const askedData = {
+            rowkey: rowkey
+        };
 
-        // const body = JSON.stringify(likeData);
+        const askedBody = JSON.stringify(askedData);
 
-        // const res = await fetch("/api/like", {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //     },
-        //     body: body
-        // });
+        const askedRes = await fetch("/api/askedquestion", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: askedBody
+        });
 
-        // // console.log(res.status);
+        // console.log(res.status);
 
         // // check if user has already liked or not
         // !likeResponse.like ? listitem.likedBy! += 1 : listitem.likedBy! -= 1;
 
-        // setPromotedQuestions(
-        //     promotedQuestions!.map(item =>
-        //         item.key === listitem.key
-        //         ? {...item, likedBy : listitem.likedBy!}
-        //         : item
-        // ));
+        setPromotedQuestions(
+            promotedQuestions!.map(item =>
+                item.key === listitem.key
+                ? {...item, asked : true, askedWhen: Date.now().toString()}
+                : item
+        ));
 
 
     };
@@ -194,9 +193,14 @@ export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) 
                         <Button primary onClick={() => sendBubble(listitem)} content="Promote" />
                         <Flex vAlign="center">
                             <TextExampleShorthand content={`${listitem.likedBy} likes`} />
-                            <EyeSlashIcon outline={!listitem.asked} title={listitem.asked ? "Question Asked" : "Question Not Asked"} styles={{
-                                        cursor: "pointer"
+                            {listitem.asked ? 
+                            <EyeIcon title={`Question asked on ${listitem.askedWhen}`} styles={{
+                                cursor: "pointer"
+                            }}/> :
+                            <EyeSlashIcon title="Question not asked yet" styles={{
+                                cursor: "pointer"
                             }}/>
+                            }
                         </Flex>
                     </Flex>
                 </Card.Footer>

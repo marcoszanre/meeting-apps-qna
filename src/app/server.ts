@@ -271,11 +271,11 @@ express.use("/api/powerbiaccesstoken", async (req, res, next) => {
 
 express.use("/api/askedquestion", async (req, res, next) => {
 
-    if (req.method === "GET") {
+    if (req.method === "PATCH") {
 
         log("Get askedquestion called");
 
-        const rowkey = req.query.rowkey as string;
+        const rowkey = req.body.rowkey as string;
 
         // log(token);
 
