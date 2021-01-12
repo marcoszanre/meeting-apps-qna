@@ -51,7 +51,7 @@ export const QnATabConfig = () => {
                                 }
                             }}
                             required />
-                            <Image fluid src="https://meetingapps.blob.core.windows.net/images/gears.png" />
+                            {/* <Image fluid src="https://meetingapps.blob.core.windows.net/images/gears.png" /> */}
                     </div>
                 </Flex.Item>
             </Flex>
