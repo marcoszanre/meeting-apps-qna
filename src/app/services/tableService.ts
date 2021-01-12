@@ -193,7 +193,9 @@ const getAllQuestions = async (meetingid: string) => {
                     promoted: result.entries[i].promoted._,
                     RowKey: result.entries[i].RowKey._,
                     Timestamp: result.entries[i].Timestamp._,
-                    likedBy: result.entries[i].likedBy._
+                    likedBy: result.entries[i].likedBy._,
+                    asked: result.entries[i].asked._,
+                    askedWhen: result.entries[i].askedWhen._
                   };
 
                   myQuestions.push(question);   
