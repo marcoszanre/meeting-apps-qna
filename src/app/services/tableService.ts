@@ -23,6 +23,20 @@ const initTableSvc = () => {
           log("table service likes done");
         }
     });
+    
+    tableSvc.createTableIfNotExists("auditTable", (error, result, response) => {
+        if (!error) {
+          // Table exists or created
+          log("table service audit done");
+        }
+    });
+
+    tableSvc.createTableIfNotExists("meetingsTable", (error, result, response) => {
+        if (!error) {
+          // Table exists or created
+          log("table service audit done");
+        }
+    });
 };
 
 const insertQuestion = (meetingid: string, author: string, question: string) => {

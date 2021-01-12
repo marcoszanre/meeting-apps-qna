@@ -5,6 +5,7 @@ import { models, Report, Embed, IEmbedConfiguration, service, Page } from 'power
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { Question } from "../../../services/tableService";
+import TextExampleShorthand from "./Text";
 
 interface IOrganizerProps {
     context: Context;
@@ -43,6 +44,8 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
         content: string;
         header?: string;
         promoted?: boolean;
+        asked?: boolean;
+        askedWhen?: string;
     }
 
     useEffect(() => {
@@ -81,7 +84,9 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                     content: result[index].question,
                     key: result[index].RowKey,
                     header: result[index].author,
-                    promoted: result[index].promoted
+                    promoted: result[index].promoted,
+                    asked: result[index].asked!,
+                    askedWhen: result[index].askedWhen!
                 };
 
                 listItems.push(listItem);
@@ -284,15 +289,17 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
     const downloadQuestions = () => {
         if (!isMeetingStateActive && allQuestions?.length! > 0) {
             // alert("let's download some data!");
-            let arrayContent: Array<string> = ["content;key;header;promoted"];
+            let arrayContent: Array<string> = ["content;key;header;promoted;asked;askedwhen"];
             for (let index = 0; index < allQuestions!.length; index++) {
 
                 const content = allQuestions![index].content as string;
                 const key =  allQuestions![index].key as string;
                 const header =  allQuestions![index].header as string;
                 const promoted = allQuestions![index].promoted! as unknown as string;
+                const asked = allQuestions![index].asked! as unknown as string;
+                const askedwhen = allQuestions![index].askedWhen! as unknown as string;
 
-                const listItem = `${content};${key};${header};${promoted}`;
+                const listItem = `${content};${key};${header};${promoted};${asked};${askedwhen}`;
                 arrayContent.push(listItem);
             }
             
@@ -439,6 +446,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                 }}/>
                 </Flex>
                 {notPromotedListItems ? <NotPromotedList /> : <Loader label="Loading not promoted questions" />}
+                {notPromotedListItems?.length! === 0 && <TextExampleShorthand content="No questions to display" /> }
             </Segment>
         </Flex.Item>
         <Flex.Item size="size.half">
@@ -454,6 +462,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                 }}/>
                 </Flex>
                 {promotedListItems ? <PromotedList /> : <Loader label="Loading promoted questions" />}
+                {promotedListItems?.length! === 0 && <TextExampleShorthand content="No questions to display" /> }
             </Segment>
         </Flex.Item>
     </Flex>

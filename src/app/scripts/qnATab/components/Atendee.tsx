@@ -3,6 +3,7 @@ import { Context } from "@microsoft/teams-js";
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { Question } from "../../../services/tableService";
+import TextExampleShorthand from "./Text";
 
 interface IOrganizerProps {
     context: Context;
@@ -249,6 +250,7 @@ export const Atendee: React.FC<IOrganizerProps> = ({ context, name }) => {
                     <Button disabled={removeBtnDisabled} onClick={handleCancelBtnClicked} icon={<CloseIcon />} content="Cancel" iconPosition="before" />
                 </Flex>
                 {myQuestions ? <ListExample /> : <Loader label="Loading questions" />}
+                {myQuestions?.length! === 0 && <TextExampleShorthand content="No questions to display" /> }
             </Segment>
         </Flex.Item>
         <Flex.Item size="size.half">
