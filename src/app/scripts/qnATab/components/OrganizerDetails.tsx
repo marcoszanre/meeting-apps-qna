@@ -191,17 +191,17 @@ export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) 
                     </Flex>
                 </Card.Body>
                 <Card.Footer>
-                    <Flex space="between" vAlign="center">
+                    <Flex space="between">
                         <Button primary onClick={() => sendBubble(listitem)} content="Promote" />
+                        {listitem.asked! === true ? 
+                        <EyeIcon title={`Question asked on ${listitem.askedWhen!}`} styles={{
+                            cursor: "pointer"
+                        }}/> :
+                        <EyeSlashIcon title="Question not asked yet" styles={{
+                            cursor: "pointer"
+                        }}/>
+                        }
                         <Flex>
-                            {listitem.asked! === true ? 
-                            <EyeIcon title={`Question asked on ${listitem.askedWhen!}`} styles={{
-                                cursor: "pointer"
-                            }}/> :
-                            <EyeSlashIcon title="Question not asked yet" styles={{
-                                cursor: "pointer"
-                            }}/>
-                            }
                             <TextExampleShorthand content={`${listitem.likedBy} likes`} />
                         </Flex>
                     </Flex>
