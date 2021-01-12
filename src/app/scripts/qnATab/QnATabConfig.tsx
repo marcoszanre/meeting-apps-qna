@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Provider, Flex, Header, Input } from "@fluentui/react-northstar";
+import { Provider, Flex, Header, Input, Image } from "@fluentui/react-northstar";
 import { useState, useEffect } from "react";
 import { useTeams } from "msteams-react-base-component";
 import * as microsoftTeams from "@microsoft/teams-js";
@@ -10,7 +10,7 @@ import * as microsoftTeams from "@microsoft/teams-js";
 export const QnATabConfig = () => {
 
     const [{ inTeams, theme, context }] = useTeams({});
-    const [customSetting, setCustomSetting] = useState<string>("QnA");
+    const [customSetting, setCustomSetting] = useState<string>("");
 
     useEffect(() => {
         if (context) {
@@ -22,7 +22,7 @@ export const QnATabConfig = () => {
                 microsoftTeams.settings.setSettings({
                     contentUrl: host + "/qnATab/?name={loginHint}&tenant={tid}&group={groupId}&theme={theme}",
                     websiteUrl: host + "/qnATab/?name={loginHint}&tenant={tid}&group={groupId}&theme={theme}",
-                    suggestedDisplayName: customSetting,
+                    suggestedDisplayName: "QnA",
                     removeUrl: host + "/qnATab/remove.html?theme={theme}",
                     entityId: customSetting
                 });
@@ -38,10 +38,10 @@ export const QnATabConfig = () => {
         <Provider theme={theme}>
             <Flex fill={true}>
                 <Flex.Item>
-                    <div>
-                        <Header content="Configure your tab" />
+                    {/* <div> */}
+                        {/* <Header content="Configure your tab" />
                         <Input
-                            placeholder="Enter your tab name"
+                            placeholder="Enter a value here"
                             fluid
                             clearable
                             value={customSetting}
@@ -51,7 +51,9 @@ export const QnATabConfig = () => {
                                 }
                             }}
                             required />
-                    </div>
+                             */}
+                             <Image fluid src="https://meetingapps.blob.core.windows.net/images/gears.png" />
+                    {/* </div> */}
                 </Flex.Item>
             </Flex>
         </Provider>
