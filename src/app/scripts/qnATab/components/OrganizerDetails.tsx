@@ -191,7 +191,7 @@ export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) 
                 <Card.Footer>
                     <Flex space="between">
                         <Button primary onClick={() => sendBubble(listitem)} content="Promote" />
-                        <Flex vAlign="center">
+                        <Flex>
                             {listitem.asked! === true ? 
                             <EyeIcon title={`Question asked on ${listitem.askedWhen!}`} styles={{
                                 cursor: "pointer"
