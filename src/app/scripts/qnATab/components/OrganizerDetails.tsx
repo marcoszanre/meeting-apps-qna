@@ -139,7 +139,7 @@ export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) 
         setPromotedQuestions(
             promotedQuestions!.map(item =>
                 item.key === listitem.key
-                ? {...item, asked : true, askedWhen: Date.now().toString()}
+                ? {...item, asked : true, askedWhen: Date.now().toLocaleString()}
                 : item
         ));
 
@@ -191,7 +191,7 @@ export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) 
                 <Card.Footer>
                     <Flex space="between">
                         <Button primary onClick={() => sendBubble(listitem)} content="Promote" />
-                        <Flex>
+                        <Flex space="between">
                             {listitem.asked! === true ? 
                             <EyeIcon title={`Question asked on ${listitem.askedWhen!}`} styles={{
                                 cursor: "pointer"

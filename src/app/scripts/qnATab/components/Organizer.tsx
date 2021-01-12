@@ -296,7 +296,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                 const key =  allQuestions![index].key as string;
                 const header =  allQuestions![index].header as string;
                 const promoted = allQuestions![index].promoted! as unknown as string;
-                const asked = allQuestions![index].asked! as unknown as string;
+                const asked = allQuestions![index].asked!.toString();
                 const askedwhen = allQuestions![index].askedWhen! as string;
 
                 const listItem = `${content};${key};${header};${promoted};${asked};${askedwhen}`;
@@ -338,6 +338,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                 paddingLeft: "1.250rem"
                 // paddingBottom: "0.625rem"
         }}/>
+        
         <RetryIcon title="Refresh Questions"
             onClick={updateQuestions} styles={{
                     position: "absolute",

@@ -10,7 +10,7 @@ import * as microsoftTeams from "@microsoft/teams-js";
 export const QnATabConfig = () => {
 
     const [{ inTeams, theme, context }] = useTeams({});
-    const [customSetting, setCustomSetting] = useState<string>("");
+    const [customSetting, setCustomSetting] = useState<string>("QnA");
 
     useEffect(() => {
         if (context) {
@@ -22,7 +22,7 @@ export const QnATabConfig = () => {
                 microsoftTeams.settings.setSettings({
                     contentUrl: host + "/qnATab/?name={loginHint}&tenant={tid}&group={groupId}&theme={theme}",
                     websiteUrl: host + "/qnATab/?name={loginHint}&tenant={tid}&group={groupId}&theme={theme}",
-                    suggestedDisplayName: "QnA",
+                    suggestedDisplayName: customSetting,
                     removeUrl: host + "/qnATab/remove.html?theme={theme}",
                     entityId: customSetting
                 });
@@ -41,7 +41,7 @@ export const QnATabConfig = () => {
                     <div>
                         <Header content="Configure your tab" />
                         <Input
-                            placeholder="Enter a value here"
+                            placeholder="Enter your tab name"
                             fluid
                             clearable
                             value={customSetting}

@@ -495,7 +495,7 @@ const tableSvcSetAskedQuestion = (rowkey: string) => {
             PartitionKey: {_: "questionsPartition"},
             RowKey: {_: rowkey},
             asked: {_: true},
-            askedWhen: {_: Date.now().toString()}
+            askedWhen: {_: Date.now().toLocaleString()}
         };
 
         tableSvc.mergeEntity("questionsTable", questionReference, (error, result, response) => {
