@@ -355,7 +355,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                         onConfirm={() => handleCloseMeetingBtnClicked(!isMeetingStateActive)}
                         confirmButton="Confirm"
                         cancelButton="Cancel"
-                        content={context.meetingId}
+                        content={context.meetingId?.substring(0, 10) + "..."}
                         header={isMeetingStateActive ? "Are you sure you want to close this meeting?" : "Are you sure you want to reopen this meeting?"}
                         headerAction={{
                             icon: <CloseIcon />,
