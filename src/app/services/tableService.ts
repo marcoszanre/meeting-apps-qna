@@ -526,6 +526,29 @@ interface Question {
 }
 
 
+const auditAction = async (action: string, actor: string, content: string, meetingid: string) => {
+
+    const auditReference = {
+        PartitionKey: {_: "auditPartition"},
+        RowKey: {_: uuidv4()},
+        action: {_: action},
+        actor: {_: actor},
+        content: {_: content},
+        meetingid: {_: meetingid}
+    };
+
+    tableSvc.insertEntity("auditTable", auditReference, (error, result, response) => {
+        if (!error) {
+          // Entity inserted
+          log("success!");
+        } else {
+          log(error);
+        }
+    });
+
+};
+
+
 export {
     initTableSvc,
     insertQuestion,

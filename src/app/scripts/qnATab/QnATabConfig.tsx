@@ -10,7 +10,7 @@ import * as microsoftTeams from "@microsoft/teams-js";
 export const QnATabConfig = () => {
 
     const [{ inTeams, theme, context }] = useTeams({});
-    const [customSetting, setCustomSetting] = useState<string>("");
+    const [customSetting, setCustomSetting] = useState<string>("QnA");
 
     useEffect(() => {
         if (context) {
