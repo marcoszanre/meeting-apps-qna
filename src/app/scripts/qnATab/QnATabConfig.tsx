@@ -10,7 +10,7 @@ import * as microsoftTeams from "@microsoft/teams-js";
 export const QnATabConfig = () => {
 
     const [{ inTeams, theme, context }] = useTeams({});
-    const [customSetting, setCustomSetting] = useState<string>("QnA");
+    const [customSetting, setCustomSetting] = useState<string>("");
 
     useEffect(() => {
         if (context) {
@@ -38,8 +38,8 @@ export const QnATabConfig = () => {
         <Provider theme={theme}>
             <Flex fill={true}>
                 <Flex.Item>
-                    {/* <div> */}
-                        {/* <Header content="Configure your tab" />
+                    <div>
+                        <Header content="Configure your tab" />
                         <Input
                             placeholder="Enter a value here"
                             fluid
@@ -51,9 +51,8 @@ export const QnATabConfig = () => {
                                 }
                             }}
                             required />
-                             */}
-                             <Image fluid src="https://meetingapps.blob.core.windows.net/images/gears.png" />
-                    {/* </div> */}
+                            <Image fluid src="https://meetingapps.blob.core.windows.net/images/gears.png" />
+                    </div>
                 </Flex.Item>
             </Flex>
         </Provider>

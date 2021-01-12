@@ -58,7 +58,11 @@ const insertQuestion = (meetingid: string, author: string, question: string) => 
             if (!error) {
               // Entity inserted
               log("success!");
-              resolve("OK")
+              resolve("OK");
+              
+              // Audit Action
+              auditAction("insert question", author, question, meetingid);
+
             } else {
               log(error);
               reject("Error")
@@ -69,7 +73,7 @@ const insertQuestion = (meetingid: string, author: string, question: string) => 
 
 const deleteQuestion = (rowkey: string) => {
 
-    return new Promise((resolve, reject) => { 
+    return new Promise((resolve, reject) => {
         const questionReference = {
             PartitionKey: {_: "questionsPartition"},
             RowKey: {_: rowkey}
