@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, CardBody, CardHeader, DownloadIcon, EyeIcon, EyeSlashIcon, Flex, Header, Loader, MoreIcon, RetryIcon, StarIcon } from "@fluentui/react-northstar";
+import { Animation, Avatar, Button, Card, CardBody, CardHeader, DownloadIcon, EyeIcon, EyeSlashIcon, Flex, Header, Loader, MoreIcon, RetryIcon, StarIcon } from "@fluentui/react-northstar";
 import { Context } from "@microsoft/teams-js";
 import * as React from "react";
 import { FC, useEffect, useState } from "react";
@@ -14,6 +14,7 @@ interface IOrganizerDetailsProps {
 export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) => {
 
     const [promotedQuestions, setPromotedQuestions] = useState<IListItem[]>();
+    const [playState, setPlayState] = useState<string>("paused");
 
     interface IListItem {
         key: string;
@@ -33,6 +34,8 @@ export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) 
     }, []);
 
     const updateQuestions = async () => {
+
+        setPlayState("running");
 
         const listItems: IListItem[] = [];
         loadQuestions().then((result: Question[]) => {
@@ -57,6 +60,8 @@ export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) 
             // console.log(promotedListItems);
 
         });
+
+        setPlayState("paused");
     };
 
     const loadQuestions = async () => {
@@ -148,6 +153,19 @@ export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) 
 
     };
 
+    const spinner = {
+        keyframe: {
+          from: {
+            transform: 'rotate(0deg)',
+          },
+          to: {
+            transform: 'rotate(360deg)',
+          },
+        },
+        duration: '5s',
+        iterationCount: 'infinite',
+    };
+
     return (
         <>
         <Flex column padding="padding.medium">
@@ -163,14 +181,25 @@ export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) 
                 paddingBottom: "0.625rem"
         }}/>
 
-        <RetryIcon title="Refresh Questions" onClick={updateQuestions} styles={{
+        <Animation name="spinner" playState={playState}>
+            <RetryIcon title="Refresh Questions" onClick={updateQuestions} styles={{
+                        position: "absolute",
+                        right: "0",
+                        marginTop: "2.250rem",
+                        marginRight: "1.250rem",
+                        top: "0",
+                        cursor: "pointer"
+            }}/>
+        </Animation>
+
+        {/* <RetryIcon title="Refresh Questions" onClick={updateQuestions} styles={{
                     position: "absolute",
                     right: "0",
                     marginTop: "2.250rem",
                     marginRight: "1.250rem",
                     top: "0",
                     cursor: "pointer"
-        }}/>
+        }}/> */}
 
         {promotedQuestions ? promotedQuestions.map((listitem: IListItem) =>
 
