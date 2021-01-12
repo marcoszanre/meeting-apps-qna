@@ -39,7 +39,7 @@ export const QnATabConfig = () => {
             <Flex fill={true}>
                 <Flex.Item>
                     <div>
-                        <Header content="Configure your tab" />
+                        {/* <Header content="Configure your tab" />
                         <Input
                             placeholder="Enter a value here"
                             fluid
@@ -50,8 +50,8 @@ export const QnATabConfig = () => {
                                     setCustomSetting(data.value);
                                 }
                             }}
-                            required />
-                            {/* <Image fluid src="https://meetingapps.blob.core.windows.net/images/gears.png" /> */}
+                            required /> */}
+                            <Image fluid src="https://meetingapps.blob.core.windows.net/images/gears.png" />
                     </div>
                 </Flex.Item>
             </Flex>

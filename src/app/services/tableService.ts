@@ -497,11 +497,13 @@ const toggleLike = async (questionId: string, userID: string) => {
 const tableSvcSetAskedQuestion = (rowkey: string) => {
 
     return new Promise((resolve, reject) => { 
+
+        const dateNow = new Date().toLocaleString();
         const questionReference = {
             PartitionKey: {_: "questionsPartition"},
             RowKey: {_: rowkey},
             asked: {_: true},
-            askedWhen: {_: Date.now().toLocaleString()}
+            askedWhen: {_: dateNow}
         };
 
         tableSvc.mergeEntity("questionsTable", questionReference, (error, result, response) => {

@@ -136,10 +136,12 @@ export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) 
         // // check if user has already liked or not
         // !likeResponse.like ? listitem.likedBy! += 1 : listitem.likedBy! -= 1;
 
+        const dateNow = new Date().toLocaleString();
+
         setPromotedQuestions(
             promotedQuestions!.map(item =>
                 item.key === listitem.key
-                ? {...item, asked : true, askedWhen: Date.now().toLocaleString()}
+                ? {...item, asked : true, askedWhen: dateNow}
                 : item
         ));
 
@@ -189,9 +191,9 @@ export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) 
                     </Flex>
                 </Card.Body>
                 <Card.Footer>
-                    <Flex space="between">
+                    <Flex space="between" vAlign="center">
                         <Button primary onClick={() => sendBubble(listitem)} content="Promote" />
-                        <Flex space="between">
+                        <Flex>
                             {listitem.asked! === true ? 
                             <EyeIcon title={`Question asked on ${listitem.askedWhen!}`} styles={{
                                 cursor: "pointer"
