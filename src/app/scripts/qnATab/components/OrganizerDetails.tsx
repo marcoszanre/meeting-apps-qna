@@ -1,4 +1,4 @@
-import { Animation, Avatar, Button, Card, CardBody, CardHeader, DownloadIcon, EyeIcon, EyeSlashIcon, Flex, Header, Loader, MoreIcon, RetryIcon, StarIcon } from "@fluentui/react-northstar";
+import { Animation, Avatar, Button, Card, CardBody, CardHeader, DownloadIcon, EyeIcon, EyeSlashIcon, Flex, Header, Loader, MoreIcon, Provider, RetryIcon, StarIcon } from "@fluentui/react-northstar";
 import { Context } from "@microsoft/teams-js";
 import * as React from "react";
 import { FC, useEffect, useState } from "react";
@@ -168,6 +168,7 @@ export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) 
 
     return (
         <>
+        <Provider theme={ {animations: {spinner} }}>
         <Flex column padding="padding.medium">
         <Header
             as="h3"
@@ -241,7 +242,7 @@ export const OrganizerDetails: FC<IOrganizerDetailsProps> = ({ context, name }) 
             : <Loader label="Loading promoted questions" />}
 
         </Flex>
-
+        </Provider>
         </>
   );
 
