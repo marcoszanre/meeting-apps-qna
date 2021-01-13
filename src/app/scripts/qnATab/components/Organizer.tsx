@@ -1,4 +1,4 @@
-import { Flex, Header, Segment, Input, Dialog, CloseIcon, Button, Loader, TextArea, List, ListProps, TrashCanIcon, EditIcon, AcceptIcon, EyeIcon, EyeSlashIcon, SearchIcon, RetryIcon, BanIcon, CallRecordingIcon, DownloadIcon } from "@fluentui/react-northstar";
+import { Animation, Flex, Header, Segment, Input, Dialog, CloseIcon, Button, Loader, TextArea, List, ListProps, TrashCanIcon, EditIcon, AcceptIcon, EyeIcon, EyeSlashIcon, SearchIcon, RetryIcon, BanIcon, CallRecordingIcon, DownloadIcon, Provider } from "@fluentui/react-northstar";
 import { Context } from "@microsoft/teams-js";
 import { PowerBIEmbed } from "powerbi-client-react";
 import { models, Report, Embed, IEmbedConfiguration, service, Page } from 'powerbi-client';
@@ -37,6 +37,8 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
     const [promotedItemsSearchFilter, setPromotedItemsSearchFilter] = useState<string>();
     const [notPromotedItemsSearchFilter, setNotPromotedItemsSearchFilter] = useState<string>();
     const [accessToken, setAccessToken] = useState<string>();
+    const [playState, setPlayState] = useState<string>("paused");
+
 
 
     interface IListItem {
@@ -76,6 +78,9 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
 
     const updateQuestions = async () => {
 
+        setPlayState("running");
+
+
         const listItems: IListItem[] = [];
         loadQuestions().then((result: Question[]) => {
             for (let index = 0; index < result.length; index++) {
@@ -104,6 +109,8 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
         });
 
         !isDefaultMeetingActive && initializePowerBI();
+        setPlayState("paused");
+
     };
 
     const remoteQuestionFromArray = async () => {
@@ -323,8 +330,22 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
         requireSingleSelection: true // Limits selection of values to one.
     }
 
+    const spinner = {
+        keyframe: {
+          from: {
+            transform: 'rotate(0deg)',
+          },
+          to: {
+            transform: 'rotate(360deg)',
+          },
+        },
+        duration: '5s',
+        iterationCount: 'infinite',
+    };
+
     return (
         <>
+        <Provider theme={ {animations: {spinner} }}>
         <Flex column padding="padding.medium">
 
         <Header
@@ -339,6 +360,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                 // paddingBottom: "0.625rem"
         }}/>
         
+        <Animation name="spinner" playState={playState}>
         <RetryIcon title="Refresh Questions"
             onClick={updateQuestions} styles={{
                     position: "absolute",
@@ -348,6 +370,8 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
                     top: "0",
                     cursor: "pointer"
         }}/>
+        </Animation>
+
         <Dialog
                         open={isCloseMeetingDialogOpen}
                         onOpen={() => setIsCloseMeetingDialogOpen(true)}
@@ -467,6 +491,7 @@ export const Organizer: React.FC<IOrganizerProps> = ({ context, name, teamsAcces
             </Segment>
         </Flex.Item>
     </Flex>
+    </Provider>
     </>
   );
 

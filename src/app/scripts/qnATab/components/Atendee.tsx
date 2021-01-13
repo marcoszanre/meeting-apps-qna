@@ -1,4 +1,4 @@
-import { Flex, Header, Segment, Input, Dialog, CloseIcon, Button, Loader, TextArea, List, ListProps, TrashCanIcon, EditIcon, RetryIcon } from "@fluentui/react-northstar";
+import { Animation, Flex, Header, Segment, Input, Dialog, CloseIcon, Button, Loader, TextArea, List, ListProps, TrashCanIcon, EditIcon, RetryIcon, Provider } from "@fluentui/react-northstar";
 import { Context } from "@microsoft/teams-js";
 import * as React from "react";
 import { useState, useEffect } from "react";
@@ -23,6 +23,8 @@ export const Atendee: React.FC<IOrganizerProps> = ({ context, name }) => {
     const [dialogContent, setDialogContent] = useState<string>();
     const [editedQuestion, setEditedQuestion] = useState<string>();
     const [isNotAllowedToSubmitQuestion, setIsNotAllowedToSubmitQuestion] = useState<boolean>(true);
+    const [playState, setPlayState] = useState<string>("paused");
+
 
 
 
@@ -40,6 +42,8 @@ export const Atendee: React.FC<IOrganizerProps> = ({ context, name }) => {
 
     const updateQuestions = async () => {
 
+        setPlayState("running");
+
         const listItems: IListItem[] = [];
         loadQuestions().then((result: Question[]) => {
             for (let index = 0; index < result.length; index++) {
@@ -54,6 +58,9 @@ export const Atendee: React.FC<IOrganizerProps> = ({ context, name }) => {
 
             setMyQuestions(listItems);
         });
+
+        setPlayState("paused");
+
     };
 
     const remoteQuestionFromArray = async () => {
@@ -191,8 +198,22 @@ export const Atendee: React.FC<IOrganizerProps> = ({ context, name }) => {
 
     };
 
+    const spinner = {
+        keyframe: {
+          from: {
+            transform: 'rotate(0deg)',
+          },
+          to: {
+            transform: 'rotate(360deg)',
+          },
+        },
+        duration: '5s',
+        iterationCount: 'infinite',
+    };
+
     return (
         <>
+        <Provider theme={ {animations: {spinner} }}>
         <Flex column padding="padding.medium">
 
         <Header
@@ -206,6 +227,8 @@ export const Atendee: React.FC<IOrganizerProps> = ({ context, name }) => {
                 paddingLeft: "1.250rem"
                 // paddingBottom: "0.625rem"
         }}/>
+
+        <Animation name="spinner" playState={playState}>
         <RetryIcon title="Refresh Questions" onClick={updateQuestions} styles={{
                     position: "absolute",
                     right: "0",
@@ -214,6 +237,7 @@ export const Atendee: React.FC<IOrganizerProps> = ({ context, name }) => {
                     top: "0",
                     cursor: "pointer"
         }}/>
+        </Animation>
 
         <Segment>
                 <Header as="h2" content="Ask a question" />
@@ -264,6 +288,7 @@ export const Atendee: React.FC<IOrganizerProps> = ({ context, name }) => {
             </Segment>
         </Flex.Item>
     </Flex>
+    </Provider>
     </>
   );
 };

@@ -83,7 +83,11 @@ const deleteQuestion = (rowkey: string) => {
             if (!error) {
               // Entity inserted
               log("success!");
-              resolve("OK")
+              resolve("OK");
+
+              // Audit Action
+              auditAction("delete question", "", rowkey, "");
+
             } else {
               log(error);
               reject("Error")
@@ -106,6 +110,10 @@ const tableSvcUpdateQuestion = (rowkey: string, question: string) => {
               // Entity inserted
               log("success!");
               resolve("OK");
+
+              // Audit Action
+              auditAction("update question", "", question, rowkey);
+
             } else {
               log(error);
               reject("Error");
@@ -128,6 +136,10 @@ const tableSvcPromoteDemoteQuestion = (rowkey: string, promoted: boolean) => {
               // Entity inserted
               log("success!");
               resolve("OK");
+
+              // Audit Action
+              auditAction("promote question", "", promoted.toString(), rowkey);
+
             } else {
               log(error);
               reject("Error");
@@ -228,6 +240,10 @@ const setActiveQuestion = (meetingid: string, question: string) => {
                   // Entity inserted
                   log("success!");
                   resolve("OK");
+
+                  // Audit Action
+                  auditAction("set active question", "", question, meetingid);
+
                 } else {
                   log(error);
                   reject("Error");
@@ -240,6 +256,10 @@ const setActiveQuestion = (meetingid: string, question: string) => {
                   // Entity inserted
                   log("success!");
                   resolve("OK");
+
+                  // Audit Action
+                  auditAction("set active question", "", question, meetingid);
+
                 } else {
                   log(error);
                   reject("Error");
@@ -288,6 +308,10 @@ const setMeetingState = (rowkey: string, active: boolean) => {
                   // Entity inserted
                   log("success!");
                   resolve("OK");
+
+                  // Audit Action
+                  auditAction("set meeting state", "", active.toString(), rowkey);
+
                 } else {
                   log(error);
                   reject("Error");
@@ -300,6 +324,10 @@ const setMeetingState = (rowkey: string, active: boolean) => {
                   // Entity inserted
                   log("success!");
                   resolve("OK");
+
+                  // Audit Action
+                  auditAction("set meeting state", "", active.toString(), rowkey);
+
                 } else {
                   log(error);
                   reject("Error");
@@ -396,9 +424,11 @@ const insertLike = async (questionId: string, userID: string) => {
 
     return new Promise((resolve) => {
 
+            const likeid = uuidv4();
+
             const likeReference = {
                 PartitionKey: {_: "likesPartition"},
-                RowKey: {_: uuidv4()},
+                RowKey: {_: likeid},
                 questionId: {_: questionId},
                 userID: {_: userID}
             };
@@ -408,6 +438,10 @@ const insertLike = async (questionId: string, userID: string) => {
                   // Entity inserted
                   log("success!");
                   resolve("OK");
+
+                  // Audit Action
+                  auditAction("insert like", userID, questionId, likeid);
+
                 } else {
                   log(error);
                   resolve("Error");
@@ -434,7 +468,11 @@ const removeLike = async (questionId: string, userID: string) => {
             if (!error) {
               // Entity inserted
               log("success!");
-              resolve("OK")
+              resolve("OK");
+
+              // Audit Action
+              auditAction("remove like", "", rowkey as string, "");
+
             } else {
               log(error);
               resolve("Error")
@@ -511,6 +549,10 @@ const tableSvcSetAskedQuestion = (rowkey: string) => {
               // Entity inserted
               log("success!");
               resolve("OK");
+
+              // Audit Action
+              auditAction("set asked question", "", "true", rowkey);
+
             } else {
               log(error);
               reject("Error");

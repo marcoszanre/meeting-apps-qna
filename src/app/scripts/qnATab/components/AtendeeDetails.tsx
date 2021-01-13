@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import * as React from "react";
 import { Context } from "@microsoft/teams-js";
-import { Flex, Header, RetryIcon, Card, Avatar, Button, StarIcon, Loader, LikeIcon, Reaction } from "@fluentui/react-northstar";
+import { Animation, Flex, Header, RetryIcon, Card, Avatar, Button, StarIcon, Loader, LikeIcon, Reaction, Provider } from "@fluentui/react-northstar";
 import { Question } from "../../../services/tableService";
 import TextExampleShorthand from "./Text";
 
@@ -16,6 +16,8 @@ const AtendeeDetails: FC<IAtendeeDetailsProps> = ({ context, name }) => {
     const [hasNotReacted, setHasNotReacted] = useState<boolean>(true);
     const [reactionCount, setReactionCount] = useState<number>(10);
     const [log, setLog] = useState<string>("");
+    const [playState, setPlayState] = useState<string>("paused");
+
 
 
 
@@ -35,6 +37,8 @@ const AtendeeDetails: FC<IAtendeeDetailsProps> = ({ context, name }) => {
     }, []);
 
     const updateQuestions = async () => {
+
+        setPlayState("running");
 
         const listItems: IListItem[] = [];
         loadQuestions().then((result: Question[]) => {
@@ -57,6 +61,9 @@ const AtendeeDetails: FC<IAtendeeDetailsProps> = ({ context, name }) => {
         // console.log(promotedListItems);
 
         });
+
+        setPlayState("paused");
+
     };
 
 
@@ -111,8 +118,22 @@ const AtendeeDetails: FC<IAtendeeDetailsProps> = ({ context, name }) => {
         // alert(listitem.likedBy!);
     };
 
+    const spinner = {
+        keyframe: {
+          from: {
+            transform: 'rotate(0deg)',
+          },
+          to: {
+            transform: 'rotate(360deg)',
+          },
+        },
+        duration: '5s',
+        iterationCount: 'infinite',
+    };
+
     return (
         <>
+        <Provider theme={ {animations: {spinner} }}>
         <Flex column padding="padding.medium">
         <Header
             as="h3"
@@ -126,6 +147,7 @@ const AtendeeDetails: FC<IAtendeeDetailsProps> = ({ context, name }) => {
                 paddingBottom: "0.625rem"
         }}/>
 
+        <Animation name="spinner" playState={playState}>
         <RetryIcon title="Refresh Questions" onClick={updateQuestions} styles={{
                     position: "absolute",
                     right: "0",
@@ -134,6 +156,7 @@ const AtendeeDetails: FC<IAtendeeDetailsProps> = ({ context, name }) => {
                     top: "0",
                     cursor: "pointer"
         }}/>
+        </Animation>
 
         <TextExampleShorthand content={log}/>
 
@@ -167,7 +190,7 @@ const AtendeeDetails: FC<IAtendeeDetailsProps> = ({ context, name }) => {
             : <Loader label="Loading promoted questions" />}
 
         </Flex>
-
+        </Provider>
         </>
   );
 
