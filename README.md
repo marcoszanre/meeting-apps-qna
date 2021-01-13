@@ -5,6 +5,11 @@
 The QnA Meeting App is an example of how the existing Teams meeting extensibility points can be used to enable users, from different roles, to interact with meetings questions. The app leverages all existing meeting extensibility points, and provides different experiences according to the user role and also the meeting state, whether it is active or not. In addition, this app also connects to Microsoft Graph, based on a resource account, to expose a Power BI Report on meeting questions.
 
 
+## YouTube Video
+
+[![Apps in Teams Meeting YouTube Video](https://github.com/marcoszanre/meeting-apps-qna/blob/master/assets/githubImage8.png)](https://youtu.be/dH2OVc7D81A)
+
+
 ## How does it work?
 
 When the user connects to the QnA app, the tab, which leverages Single Sign On, will authenticate the user and retrieve its current role, which could be of a presenter, organizer or attendee. After that, the tab will route the UI according to the user role and also the frameContext, which determines if the app is being opened from the Meetings Details page, side panel or as a task content.
@@ -123,37 +128,37 @@ It is also very important to plan what actions will be available for each user r
 
 1. Before meeting organizer/presenter view of existing questions:
 
-![Before meeting organizer/presenter view of existing questions screenshot](https://github.com/marcoszanre/obfuscation-bot-typescript/blob/master/demo-1.png/)
+![Before meeting organizer/presenter view of existing questions screenshot](https://github.com/marcoszanre/meeting-apps-qna/blob/master/assets/githubImage1.png)
 
 
 2. Before meeting attendee view of existing questions:
 
-![Before meeting attendee view of existing questions screenshot](https://github.com/marcoszanre/obfuscation-bot-typescript/blob/master/demo-2.png/)
+![Before meeting attendee view of existing questions screenshot](https://github.com/marcoszanre/meeting-apps-qna/blob/master/assets/githubImage2.png)
 
 
 3. In-meeting organizer/presenter view of existing questions:
 
-![In-meeting organizer/presenter view of existing questions screenshot](https://github.com/marcoszanre/obfuscation-bot-typescript/blob/master/demo-3.png/)
+![In-meeting organizer/presenter view of existing questions screenshot](https://github.com/marcoszanre/meeting-apps-qna/blob/master/assets/githubImage3.png)
 
 
 4. In-meeting organizer/presenter promoted questions task content:
 
-![In-meeting organizer/presenter promoted questions task content screenshot](https://github.com/marcoszanre/obfuscation-bot-typescript/blob/master/demo-3.png/)
+![In-meeting organizer/presenter promoted questions task content screenshot](https://github.com/marcoszanre/meeting-apps-qna/blob/master/assets/githubImage4.png)
 
 
 5. In-meeting attendee view of existing questions:
 
-![In-meeting attendee view of existing questions screenshot](https://github.com/marcoszanre/obfuscation-bot-typescript/blob/master/demo-3.png/)
+![In-meeting attendee view of existing questions screenshot](https://github.com/marcoszanre/meeting-apps-qna/blob/master/assets/githubImage5.png)
 
 
 6. After meeting organizer/presenter view of questions reports:
 
-![After meeting organizer/presenter view of questions reports screenshot](https://github.com/marcoszanre/obfuscation-bot-typescript/blob/master/demo-3.png/)
+![After meeting organizer/presenter view of questions reports screenshot](https://github.com/marcoszanre/meeting-apps-qna/blob/master/assets/githubImage6.png)
 
 
 7. After meeting attendee view of closed meeting message:
 
-![After meeting attendee view of closed meeting message screenshot](https://github.com/marcoszanre/obfuscation-bot-typescript/blob/master/demo-3.png/)
+![After meeting attendee view of closed meeting message screenshot](https://github.com/marcoszanre/meeting-apps-qna/blob/master/assets/githubImage7.png)
 
 
 ## References
@@ -167,7 +172,7 @@ Following are some of the references used in this project:
 * [Power BI Get Reports try it experience for retrieving Embedded values](https://docs.microsoft.com/en-us/rest/api/power-bi/reports/getreportsingroup)
 * [Power BI Client React](https://github.com/microsoft/powerbi-client-react)
 * [Azure Table Storage Node reference](https://docs.microsoft.com/en-us/azure/cosmos-db/table-storage-how-to-use-nodejs)
-* [YouTube presentation and demo](TODO)
+* [YouTube presentation and demo](https://youtu.be/dH2OVc7D81A)
 
 
 If you have any questions/suggestions, feel free to share them, **thanks**!
